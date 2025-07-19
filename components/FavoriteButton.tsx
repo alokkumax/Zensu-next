@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 const FavoriteButton = () => {
   return (
     <Link href={"/cart"} className="group relative">
-      <Heart className="w-5 h-5
+      <Heart className="w-5 h-5 text-shop-dark-grey
        hover:pointer hoverEffect" />
       <span 
         className="

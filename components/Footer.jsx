@@ -6,12 +6,12 @@ import SocialMedia from "./SocialMedia";
 // import { SubText, SubTitle } from "./ui/text";
 import { categoriesData, quickLinksData } from "@/constants/data";
 import Link from "next/link";
-// import { Input } from "./ui/input";
-// import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Button } from "./ui/button";
 
 const Footer = () => {
   return (
-    <footer className="bg-white border-t">
+    <footer className="bg-white border-t px-8">
       <Container>
         {/* <FooterTop /> */}
         <div className="py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -64,15 +64,14 @@ const Footer = () => {
               offers
             </SubText> */}
             <form className="space-y-3">
-              {/* <Input placeholder="Enter your email" type="email" required /> */}
-              {/* <Button className="w-full">Subscribe</Button> */}
+              <Input placeholder="Enter your email" type="email" required />
+              <Button className="w-full">Subscribe</Button>
             </form>
           </div>
         </div>
         <div className="py-6 border-t text-center text-sm text-gray-600">
           <div>
-            © {new Date().getFullYear()} <Logo className="text-sm" />. All
-            rights reserved.
+            © {new Date().getFullYear()} <Logo className="text-sm" />. All rights reserved.
           </div>
         </div>
       </Container>
