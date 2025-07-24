@@ -28,3 +28,9 @@ export const productType = [
   { title: "Refrigerators", value: "refrigerators" },
   { title: "Others", value: "others" },
 ];
+export const productTypeZ = [
+  { title: "Handbags", value: "handbags" },
+  { title: "Suitcases", value: "suitcases" },
+  { title: "Bagpacks", value: "bagpacks" },
+  { title: "Others", value: "others" },
+];
