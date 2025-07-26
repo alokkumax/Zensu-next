@@ -13,7 +13,7 @@ const HeaderMenu = () => {
         <Link
           key={item?.title}
           href={item?.href}
-          className={`hover:pointer relative group
+          className={`hover:pointer relative group whitespace-nowrap
           ${pathname === item?.href && "text-black font-medium"}
           `}
         >
