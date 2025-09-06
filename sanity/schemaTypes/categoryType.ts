@@ -36,13 +36,13 @@ export const categoryType = defineType({
       initialValue: false,
     }),
     defineField({
-      name: "image",
-      title: "Category Image",
-      type: "image",
-      options: {
-        hotspot: true,
-      },
-    }),
+  name: 'image',
+  title: 'Image',
+  type: 'image',
+  options: {
+    hotspot: true // This allows for better image cropping
+  }
+}),
   ],
   preview: {
     select: {

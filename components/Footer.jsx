@@ -69,10 +69,8 @@ const Footer = () => {
             </form>
           </div>
         </div>
-        <div className="py-6 border-t text-center text-sm text-gray-600">
-          <div>
-            © {new Date().getFullYear()} <Logo className="text-sm" />. All rights reserved.
-          </div>
+        <div className="py-6 flex justify-center align-items-center border-t text-center text-sm text-gray-600">
+            © {new Date().getFullYear()} &nbsp; <span className="text-darkColor font-semibold">ZENSU.</span>&nbsp;All rights reserved.
         </div>
       </Container>
     </footer>

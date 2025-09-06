@@ -14,15 +14,13 @@ export const quickLinksData = [
   { title: "Help", href: "/help" },
 ];
 export const categoriesData = [
-  { title: "Mobiles", href: "mobiles" },
-  { title: "Appliances", href: "appliances" },
-  { title: "Smartphones", href: "smartphones" },
-  { title: "Air Conditioners", href: "air-conditioners" },
-  { title: "Washing Machine", href: "washing-machine" },
-  { title: "Kitchen Appliances", href: "kitchen-appliances" },
-  { title: "gadget accessories", href: "gadget-accessories" },
+ { title: "Handbags", href: "handbags" },
+  { title: "Suitcases", href: "suitcases" },
+  { title: "Bagpacks", href: "bagpacks" },
+  { title: "Others", href: "others" },
 ];
 export const productType = [
+  { title: "All", value: "all" },
   { title: "Gadget", value: "gadget" },
   { title: "Appliances", value: "appliances" },
   { title: "Refrigerators", value: "refrigerators" },
