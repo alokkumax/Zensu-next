@@ -1,13 +1,15 @@
-import React from 'react';
+import Shop from "@/components/Shop";
+import { getAllBrands, getCategories } from "@/sanity/queries";
+import React from "react";
 
-const ShopPage = () => {
-  return (  
-    <div>
-      <h1>Shop Page</h1>
-      <p>Welcome to the shop page. Here you can find various products and categories.</p>
-      {/* Additional content can be added here */}
+const ShopPage = async () => {
+  const categories = await getCategories();
+  const brands = await getAllBrands();
+  return (
+    <div className="bg-white">
+      <Shop categories={categories} brands={brands} />
     </div>
   );
-}
+};
 
 export default ShopPage;

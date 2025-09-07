@@ -3,24 +3,26 @@ import { Product } from "@/sanity.types";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { ShoppingBag } from "lucide-react";
-// import useStore from "@/store";
-// import toast from "react-hot-toast";
+import useStore from "@/store";
+import toast from "react-hot-toast";
 import PriceFormatter from "./PriceFormatter";
 import QuantityButtons from "./QuantityButtons";
+import { useState } from "react";
+import { get } from "http";
 
-/**
- * @typedef {Object} Props
- * @property {import("@/sanity.types").Product} product
- * @property {string} [className]
- */
+interface Props {
+  product: Product;
+  className?: string;
+}
 
-const AddToCartButton = ({ product, className }) => {
+const AddToCartButton = ({ product, className }: Props) => {
   const { addItem, getItemCount } = useStore();
   const itemCount = getItemCount(product?._id);
   const isOutOfStock = product?.stock === 0;
+  // const [isClient, setIsClient] = useState(false);
 
   const handleAddToCart = () => {
-    if ((product?.stock ?? 0) > itemCount) {
+    if ((product?.stock as number) > itemCount) {
       addItem(product);
       toast.success(
         `${product?.name?.substring(0, 12)}... added successfully!`
@@ -28,6 +30,7 @@ const AddToCartButton = ({ product, className }) => {
     } else {
       toast.error("Can not add more than available stock");
     }
+    // window.alert("Feature coming soon!");
   };
   return (
     <div className="w-full h-12 flex items-center">
@@ -49,13 +52,13 @@ const AddToCartButton = ({ product, className }) => {
           onClick={handleAddToCart}
           disabled={isOutOfStock}
           className={cn(
-            "w-full bg-shop_dark_green/80 text-lightBg shadow-none border border-shop_dark_green/80 font-semibold tracking-wide text-white hover:bg-shop_dark_green hover:border-shop_dark_green hoverEffect",
+            "w-full bg-shop_dark_green/80 text-lightBg shadow-none border border-shop_dark_green/80 font-semibold tracking-wide text-black hover:bg-shop_dark_green hover:border-shop_dark_green hoverEffect",
             className
           )}
         >
           <ShoppingBag /> {isOutOfStock ? "Out of Stock" : "Add to Cart"}
         </Button>
-      )}
+       )}
     </div>
   );
 };

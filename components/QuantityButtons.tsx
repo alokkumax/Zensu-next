@@ -6,9 +6,11 @@ import { Minus, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import toast from "react-hot-toast";
 
-import PropTypes from "prop-types";
-
-const QuantityButtons = ({ product, className }) => {
+interface Props {
+  product: Product;
+  className?: string;
+}
+const QuantityButtons = ({ product, className }: Props) => {
   const { addItem, removeItem, getItemCount } = useStore();
   const itemCount = getItemCount(product?._id);
   const isOutOfStock = product?.stock === 0;
@@ -23,7 +25,7 @@ const QuantityButtons = ({ product, className }) => {
   };
 
   const handleAddToCart = () => {
-    if (product?.stock > itemCount) {
+    if ((product?.stock as number) > itemCount) {
       addItem(product);
       toast.success("Quantity Increased successfully!");
     } else {
@@ -58,7 +60,4 @@ const QuantityButtons = ({ product, className }) => {
   );
 };
 
-export default QuantityButtons;QuantityButtons.propTypes = {
-  product: PropTypes.object.isRequired,
-  className: PropTypes.string,
-};
+export default QuantityButtons;

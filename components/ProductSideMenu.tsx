@@ -41,7 +41,7 @@ const ProductSideMenu = ({
         onClick={handleFavorite}
         className={`p-2.5 rounded-full hover:bg-shop_dark_green/80 hover:text-white hoverEffect  ${existingProduct ? "bg-shop_dark_green/80 text-white" : "bg-lightColor/10"}`}
       >
-        <Heart size={15} />
+        <Heart size={15} className="fill-red-500"/>
       </div>
     </div>
   );
