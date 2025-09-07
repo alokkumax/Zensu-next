@@ -5,19 +5,24 @@ import ProductCard from "./ProductCard";
 import { motion, AnimatePresence } from "motion/react";
 import { client } from "@/sanity/lib/client";
 import NoProductAvailable from "./NoProductAvailable";
-import { Loader2 } from "lucide-react";
+import { Link, Loader2 } from "lucide-react";
 import Container from "./Container";
-import HomeTabBar from "./HomeTabBar";
-import { productType } from "@/constants/data";
+import { productTypeZ } from "@/constants/data";
 import { Product } from "@/sanity.types";
 
 const ProductGrid = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedTab, setSelectedTab] = useState(productType[0]?.title || "");
-  const query = `*[_type == "product" ${selectedTab.toLowerCase() !== "all" ? '&& variant == $variant' : ''}] | order(name asc){
+  const [selectedTab, setSelectedTab] = useState("All");
+
+  const query = `*[_type == "product" ${
+    selectedTab.toLowerCase() === "all"
+      ? "&& isFeatured == true"
+      : "&& variant == $variant"
+  }] | order(name asc){
     ...,"categories": categories[]->title
   }`;
+
   const params = { variant: selectedTab.toLowerCase() };
 
   useEffect(() => {
@@ -37,7 +42,40 @@ const ProductGrid = () => {
 
   return (
     <Container className="flex flex-col lg:px-0 my-10">
-      <HomeTabBar selectedTab={selectedTab} onTabSelect={setSelectedTab} />
+      {/* ✅ Tab Bar */}
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-6">
+        <div className="flex flex-wrap items-center gap-3">
+          {productTypeZ.map((tab) => {
+            const isActive = selectedTab === tab.title;
+            return (
+              <motion.button
+                key={tab.title}
+                whileTap={{ scale: 0.95 }}
+                onClick={() =>
+                  isActive ? setSelectedTab("All") : setSelectedTab(tab.title)
+                }
+                className={`cursor-pointer px-4 py-2 text-sm transition-all duration-200 ${
+                  isActive
+                    ? "bg-gray-100 text-black border border-black"
+                    : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-100"
+                }`}
+              >
+                {tab.title}
+              </motion.button>
+            );
+          })}
+        </div>
+
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={() => window.location.href = '/shop'}
+          className="px-4 py-2 text-sm underline rounded-md cursor-pointer border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition-all duration-200 w-fit"
+          >
+          See all
+        </motion.button>
+      </div>
+
+      {/* ✅ Products */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-10 min-h-80 space-y-4 text-center bg-gray-100 rounded-lg w-full mt-10">
           <motion.div className="flex items-center space-x-2 text-blue-600">
@@ -46,21 +84,19 @@ const ProductGrid = () => {
           </motion.div>
         </div>
       ) : products?.length ? (
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 mt-10">
-          <>
-            {products?.map((product) => (
-              <AnimatePresence key={product?._id}>
-                <motion.div
-                  layout
-                  initial={{ opacity: 0.2 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  <ProductCard key={product?._id} product={product} />
-                </motion.div>
-              </AnimatePresence>
-            ))}
-          </>
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10 w-full min-[420px]:grid-cols-1">
+          {products?.map((product) => (
+            <AnimatePresence key={product?._id}>
+              <motion.div
+                layout
+                initial={{ opacity: 0.2 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <ProductCard key={product?._id} product={product} />
+              </motion.div>
+            </AnimatePresence>
+          ))}
         </div>
       ) : (
         <NoProductAvailable selectedTab={selectedTab} />

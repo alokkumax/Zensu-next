@@ -9,95 +9,83 @@ import PriceView from "./PriceView";
 import Title from "./Title";
 // import AddToWishList from "./AddToWishList";
 import ProductSideMenu from "./ProductSideMenu";
+import FavoriteButton from "./FavoriteButton";
 // import AddToCartButton from "./AddToCartButton";
 
 const ProductCard = ({ product }: { product: Product }) => {
+  console.log(product.status, "HEY")
   return (
-    <div className="text-sm border-[1px] rounded-md border-darkBlue/20 group bg-white">
-      <div className="relative group overflow-hidden bg-shop_light_bg">
+    <div className="group bg-white flex flex-col min-w-[280px] sm:min-w-0">
+      <div className="relative w-full overflow-hidden">
         {product?.images && product.images.length > 0 && (
           <Link href={`/product/${product?.slug?.current}`}>
-            <div className="relative w-full h-64">
+            <div className="relative w-full h-[600px]">
               {/* First Image */}
               <Image
                 src={urlFor(product.images[0]).url()}
-                alt="productImage"
-                width={700}
-                height={700}
+                alt={product?.name || "Product Image"}
+                width={400}
+                height={400}
                 priority
-                className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-500 bg-shop_light_bg
+                className={`w-full h-full object-cover transition-opacity duration-500
                 group-hover:opacity-0 ${product?.stock === 0 ? "opacity-50" : "opacity-100"}`}
               />
               {/* Second Image (shows on hover) */}
               {product.images.length > 1 && (
                 <Image
                   src={urlFor(product.images[1]).url()}
-                  alt="productImage"
-                  width={700}
-                height={700}
-                  className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-500 bg-shop_light_bg opacity-0 
+                  alt={product?.name || "Product Image"}
+                  width={400}
+                  height={400}
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 
                   group-hover:opacity-100 ${product?.stock === 0 ? "opacity-50" : ""}`}
                 />
               )}
             </div>
           </Link>
         )}
-        {/* <AddToWishList product={product} /> */}
-        {/* <ProductSideMenu product={product} /> */}
-        {product?.status === "sale" ? (
-          <p className="absolute top-2 left-2 z-10 text-xs border border-darkColor/50 px-2 rounded-full group-hover:border-lightGreen hover:text-shop_dark_green hoverEffect">
-            Sale!
-          </p>
-        ) : (
-          <Link
-            href={"/hot"}
-            className="absolute top-2 left-2 z-10 border border-shop_orange/50 p-1 rounded-full group-hover:border-shop_orange hover:text-shop_dark_green hoverEffect"
-          >
-            <Flame
-              size={18}
-              fill="#fb6c08"
-              className="text-shop_orange/50 group-hover:text-shop_orange hoverEffect"
-            />
-          </Link>
+        
+        <div className="absolute top-4 right-4 hover:cursor-pointer">
+          <FavoriteButton showProduct={true} product={product} />
+        </div>
+
+        {product?.status && (
+          <div className="absolute top-4 left-4 z-10">
+            {product.status === "sale" ? (
+              <p className="text-xs font-medium bg-red-500 text-white px-4 py-1.5 rounded-full shadow-sm">
+                Sale!
+              </p>
+            ) : product.status === "hot" ? (
+              <div className="border-2 border-shop_orange p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-sm">
+                <Flame
+                  size={18}
+                  fill="#fb6c08"
+                  className="text-shop_orange"
+                />
+              </div>
+            ) : null}
+          </div>
         )}
       </div>
-      <div className="p-3 flex flex-col gap-2">
-        {/* {product?.categories && (
-          <p className="uppercase line-clamp-1 text-xs font-medium text-lightText">
-            {product.categories.map((cat) => cat).join(", ")}
+      <div className="px-0 mt-2 mb-2 flex flex-col gap-1">
+        {product?.categories && (
+          <p className="text-[#767676] italic text-sm">
+            {product.categories.map((cat) => cat._type).join(" · ")}
           </p>
-        )} */}
-        <Title className="text-sm line-clamp-1">{product?.name}</Title>
-        {/* <div className="flex items-center gap-2">
-          <div className="flex items-center">
-            {[...Array(5)].map((_, index) => (
-              <StarIcon
-                key={index}
-                className={
-                  index < 4 ? "text-shop_light_green" : " text-lightText"
-                }
-                fill={index < 4 ? "#93D991" : "#ababab"}
-              />
-            ))}
-          </div>
-          <p className="text-lightText text-xs tracking-wide">5 Reviews</p>
-        </div> */}
-
-        {/* <div className="flex items-center gap-2.5">
-          <p className="font-medium">In Stock</p>
-          <p
-            className={`${product?.stock === 0 ? "text-red-600" : "text-shop_dark_green/80 font-semibold"}`}
-          >
-            {(product?.stock as number) > 0 ? product?.stock : "unavailable"}
-          </p>
-        </div> */}
-
+        )}
+        <Link href={`/product/${product?.slug?.current}`}>
+          <h3 className="text-[16px] font-medium line-clamp-1 transition-colors">
+            {product?.name || "Product Name"}
+          </h3>
+        </Link>
         <PriceView
           price={product?.price}
           discount={product?.discount}
-          className="text-sm"
+          className="text-base font-light text-[#767676] text-[14px]"
         />
-        {/* <AddToCartButton product={product} className="w-36 rounded-full" /> */}
+        {product?.stock === 0 && (
+          <p className="text-red-500 text-sm font-medium">Out of Stock</p>
+        )}
       </div>
     </div>
   );

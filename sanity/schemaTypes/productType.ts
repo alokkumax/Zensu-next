@@ -29,6 +29,42 @@ export const productType = defineType({
       type: "array",
       of: [{ type: "image", options: { hotspot: true } }],
     }),
+    // ✅ New Video Field
+    defineField({
+      name: "videos",
+      title: "Product Videos",
+      type: "array",
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({
+              name: "upload",
+              title: "Upload Video",
+              type: "file",
+              options: { accept: "video/*" },
+            }),
+            defineField({
+              name: "url",
+              title: "Video URL",
+              type: "url",
+            }),
+          ],
+          preview: {
+            select: {
+              title: "url",
+              media: "upload",
+            },
+            prepare({ title, media }) {
+              return {
+                title: title || "Uploaded Video",
+                media,
+              };
+            },
+          },
+        },
+      ],
+    }),
     defineField({
       name: "description",
       title: "Description",
@@ -36,12 +72,36 @@ export const productType = defineType({
     }),
     defineField({
       name: "price",
-      title: "Price",
+      title: "Price in INR",
       type: "number",
       validation: (Rule) => Rule.required().min(0),
     }),
     defineField({
       name: "discount",
+      title: "Discount Percentage (%)",
+      type: "number",
+      validation: (Rule) => Rule.required().min(0),
+    }),
+    defineField({
+      name: "priceUAE",
+      title: "Price in UAE",
+      type: "number",
+      validation: (Rule) => Rule.required().min(0),
+    }),
+    defineField({
+      name: "discountUAE",
+      title: "Discount Percentage (%)",
+      type: "number",
+      validation: (Rule) => Rule.required().min(0),
+    }),
+    defineField({
+      name: "priceNPR",
+      title: "Price in NPR",
+      type: "number",
+      validation: (Rule) => Rule.required().min(0),
+    }),
+    defineField({
+      name: "discountNPR",
       title: "Discount Percentage (%)",
       type: "number",
       validation: (Rule) => Rule.required().min(0),
@@ -64,7 +124,6 @@ export const productType = defineType({
       type: "reference",
       to: { type: "brand" },
     }),
-
     defineField({
       name: "status",
       title: "Product Status",

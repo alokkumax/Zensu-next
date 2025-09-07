@@ -211,6 +211,19 @@ export type Product = {
     _type: "image";
     _key: string;
   }>;
+  /** ✅ New video field */
+  videos?: Array<{
+    _key: string;
+    _type: "object";
+    upload?: {
+      asset?: {
+        _ref: string;
+        _type: "reference";
+        [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
+      };
+    };
+    url?: string; // external YouTube/Vimeo/etc.
+  }>;
   description?: string;
   price?: number;
   discount?: number;

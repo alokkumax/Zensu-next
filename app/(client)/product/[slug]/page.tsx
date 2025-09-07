@@ -4,6 +4,7 @@ import FavoriteButton from "@/components/FavoriteButton";
 import ImageView from "@/components/ImageView";
 import PriceView from "@/components/PriceView";
 import ProductCharacteristics from "@/components/ProductCharacteristics";
+// import VideoView from "@/components/VideoView";
 import { getProductBySlug } from "@/sanity/queries";
 import { CornerDownLeft, StarIcon, Truck } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -28,6 +29,7 @@ const SingleProductPage = async ({
       {product?.images && (
         <ImageView images={product?.images} isStock={product?.stock} />
       )}
+      {/* {product?.videos && <VideoView videos={product.videos} />} */}
       <div className="w-full md:w-1/2 flex flex-row justify-center">
         <div className="w-full md:w-3/4">
           <div className="w-full flex-col gap-5">

@@ -46,15 +46,15 @@ const FavoriteButton = ({
       ) : (
         <button
           onClick={handleFavorite}
-          className="group relative hover:text-black hoverEffect border border-black p-2 rounded-full bg-white"
+          className="group relative hover:text-black hoverEffect  border-black p-2 rounded-full bg-white"
         >
           {existingProduct ? (
             <Heart
-              fill="red"
-              className="text-red-500 w-5 h-5"
+              fill="#FF0000"
+              className="text-red-500 w-5 h-5 transition-colors duration-200"
             />
           ) : (
-            <Heart fill="white" className="text-black w-5 h-5" />
+            <Heart className="text-black w-5 h-5 transition-colors duration-200" />
           )}
         </button>
       )}
