@@ -25,7 +25,7 @@ const SingleBlogPage = async ({
   if (!blog) return notFound();
 
   return (
-    <div className="py-10">
+    <div className="p-10">
       <Container className="grid grid-cols-1 lg:grid-cols-4 gap-5">
         <div className="md:col-span-3">
           {blog?.mainImage && (

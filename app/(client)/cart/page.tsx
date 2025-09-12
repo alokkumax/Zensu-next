@@ -1,9 +1,9 @@
 "use client";
 
-// import {
-//   createCheckoutSession,
-//   Metadata,
-// } from "@/actions/createCheckoutSession";
+import {
+  createCheckoutSession,
+  Metadata,
+} from "@/actions/createCheckoutSession";
 import Container from "@/components/Container";
 import EmptyCart from "@/components/EmptyCart";
 import NoAccess from "@/components/NoAccess";
@@ -31,6 +31,7 @@ import { ShoppingBag, Trash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 
 const CartPage = () => {
@@ -43,11 +44,14 @@ const CartPage = () => {
   } = useStore();
   const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponPercent, setCouponPercent] = useState<number>(0);
+  const [couponError, setCouponError] = useState<string>("");
   const groupedItems = useStore((state) => state.getGroupedItems());
   const { isSignedIn } = useAuth();
   const { user } = useUser();
-  const [addresses, setAddresses] = useState<Address[] | null>(null);
-  const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
+  // const [addresses, setAddresses] = useState<Address[] | null>(null);
+  // const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
 
   const fetchAddresses = async () => {
     setLoading(true);
@@ -67,9 +71,9 @@ const CartPage = () => {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    fetchAddresses();
-  }, []);
+  // useEffect(() => {
+  //   fetchAddresses();
+  // }, []);
   const handleResetCart = () => {
     const confirmed = window.confirm(
       "Are you sure you want to reset your cart?"
@@ -80,26 +84,59 @@ const CartPage = () => {
     }
   };
 
-//   const handleCheckout = async () => {
-//     setLoading(true);
-//     try {
-//       const metadata: Metadata = {
-//         orderNumber: crypto.randomUUID(),
-//         customerName: user?.fullName ?? "Unknown",
-//         customerEmail: user?.emailAddresses[0]?.emailAddress ?? "Unknown",
-//         clerkUserId: user?.id,
-//         address: selectedAddress,
-//       };
-//       const checkoutUrl = await createCheckoutSession(groupedItems, metadata);
-//       if (checkoutUrl) {
-//         window.location.href = checkoutUrl;
-//       }
-//     } catch (error) {
-//       console.error("Error creating checkout session:", error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+  const handleCheckout = async () => {
+    setLoading(true);
+    try {
+      const metadata: Metadata = {
+        orderNumber: crypto.randomUUID(),
+        customerName: user?.fullName ?? "Unknown",
+        customerEmail: user?.emailAddresses[0]?.emailAddress ?? "Unknown",
+        clerkUserId: user?.id,
+        // address: selectedAddress,
+      };
+      console.log(metadata);
+      console.log(groupedItems)
+      const checkoutUrl = await createCheckoutSession(groupedItems, metadata);
+      if (checkoutUrl) {
+        window.location.href = checkoutUrl;
+      }
+    } catch (error) {
+      console.error("Error creating checkout session:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const applyCoupon = async () => {
+    const code = couponCode.trim();
+    if (!code) {
+      setCouponPercent(0);
+      setCouponError("Invalid Code");
+      return;
+    }
+    try {
+      const res = await fetch(`/api/coupon?code=${encodeURIComponent(code)}`);
+      const data = await res.json();
+      if (!data.valid) {
+        setCouponPercent(0);
+        setCouponError("Invalid Code");
+        return;
+      }
+      setCouponError("");
+      setCouponPercent(Number(data.coupon?.percentOff ?? 0));
+      toast.success(`Coupon applied: ${data.coupon?.percentOff}% off`);
+    } catch (e) {
+      setCouponPercent(0);
+      setCouponError("Invalid Code");
+    }
+  };
+
+  const clearCouponIfEmpty = (value: string) => {
+    if (value.trim() === "") {
+      setCouponPercent(0);
+      setCouponError("Invalid Code");
+    }
+  };
   return (
     <div className="bg-white md:pb-10 md:p-16 p-7">
       {isSignedIn ? (
@@ -216,19 +253,44 @@ const CartPage = () => {
                       <div className="space-y-4">
                         <div className="flex items-center justify-between">
                           <span>SubTotal</span>
-                          <PriceFormatter amount={getSubTotalPrice()} />
+                          <PriceFormatter
+                            amount={getSubTotalPrice()}
+                            className={undefined}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span>Coupon</span>
+                          </div>
+                          <div className="flex gap-2">
+                            <Input
+                              value={couponCode}
+                              onChange={(e) => {
+                                setCouponCode(e.target.value);
+                                clearCouponIfEmpty(e.target.value);
+                              }}
+                              placeholder="Enter coupon code"
+                              className="rounded-none"
+                            />
+                            <Button type="button" variant="outline" onClick={applyCoupon}>
+                              Apply
+                            </Button>
+                          </div>
+                          {couponError && (
+                            <p className="text-sm text-red-600">{couponError}</p>
+                          )}
                         </div>
                         <div className="flex items-center justify-between">
                           <span>Discount</span>
                           <PriceFormatter
-                            amount={getSubTotalPrice() - getTotalPrice()}
+                            amount={(getSubTotalPrice() - getTotalPrice()) + Math.round((getSubTotalPrice() * couponPercent) / 100)}
                           />
                         </div>
                         <Separator />
                         <div className="flex items-center justify-between font-semibold text-lg">
                           <span>Total</span>
                           <PriceFormatter
-                            amount={getTotalPrice()}
+                            amount={Math.max(0, getTotalPrice() - Math.round((getSubTotalPrice() * couponPercent) / 100))}
                             className="text-lg font-bold text-black"
                           />
                         </div>
@@ -236,13 +298,13 @@ const CartPage = () => {
                           className="w-full -full font-semibold tracking-wide hoverEffect"
                           size="lg"
                           disabled={loading}
-                        //   onClick={handleCheckout}
+                          onClick={handleCheckout}
                         >
                           {loading ? "Please wait..." : "Proceed to Checkout"}
                         </Button>
                       </div>
                     </div>
-                    {addresses && (
+                    {/* {addresses && (
                       <div className="bg-white -md mt-5">
                         <Card>
                           <CardHeader>
@@ -284,7 +346,7 @@ const CartPage = () => {
                           </CardContent>
                         </Card>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 </div>
                 {/* Order summary for mobile view */}
@@ -314,7 +376,7 @@ const CartPage = () => {
                         className="w-full font-semibold tracking-wide hoverEffect"
                         size="lg"
                         disabled={loading}
-                        // onClick={handleCheckout}
+                        onClick={handleCheckout}
                       >
                         {loading ? "Please wait..." : "Proceed to Checkout"}
                       </Button>

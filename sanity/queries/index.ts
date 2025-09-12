@@ -9,7 +9,10 @@ import {
   MY_ORDERS_QUERY,
   OTHERS_BLOG_QUERY,
   PRODUCT_BY_SLUG_QUERY,
+  RELATED_PRODUCTS_QUERY,
   SINGLE_BLOG_QUERY,
+  COUPON_BY_CODE_QUERY,
+  SALES_TABS_QUERY,
 } from "./query";
 
 const getCategories = async (quantity?: number) => {
@@ -92,14 +95,16 @@ const getBrand = async (slug: string) => {
 };
 const getMyOrders = async (userId: string) => {
   try {
+    console.log("Sanity Query - Fetching orders for userId:", userId);
     const orders = await sanityFetch({
       query: MY_ORDERS_QUERY,
       params: { userId },
     });
-    return orders?.data || null;
+    console.log("Sanity Query - Orders fetched:", orders?.data?.length);
+    return orders?.data || [];
   } catch (error) {
-    console.error("Error fetching product by ID:", error);
-    return null;
+    console.error("Error fetching orders:", error);
+    return [];
   }
 };
 const getAllBlogs = async (quantity: number) => {
@@ -151,6 +156,20 @@ const getOthersBlog = async (slug: string, quantity: number) => {
     return [];
   }
 };
+
+const getRelatedProducts = async (variant: string, currentSlug: string, quantity: number = 5) => {
+  try {
+    const { data } = await sanityFetch({
+      query: RELATED_PRODUCTS_QUERY,
+      params: { variant, currentSlug, quantity },
+    });
+    return data ?? [];
+  } catch (error) {
+    console.log("Error fetching related products:", error);
+    return [];
+  }
+};
+
 export {
   getCategories,
   getAllBrands,
@@ -163,4 +182,29 @@ export {
   getSingleBlog,
   getBlogCategories,
   getOthersBlog,
+  getRelatedProducts,
+  // coupons
+};
+
+export const getCouponByCode = async (code: string) => {
+  try {
+    const { data } = await sanityFetch({
+      query: COUPON_BY_CODE_QUERY,
+      params: { code },
+    });
+    return data ?? null;
+  } catch (error) {
+    console.log("Error fetching coupon by code:", error);
+    return null;
+  }
+};
+
+export const getSalesTabs = async () => {
+  try {
+    const { data } = await sanityFetch({ query: SALES_TABS_QUERY });
+    return data ?? [];
+  } catch (error) {
+    console.log("Error fetching sales tabs:", error);
+    return [];
+  }
 };

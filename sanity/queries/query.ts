@@ -26,7 +26,7 @@ const BRAND_QUERY = defineQuery(`*[_type == "product" && slug.current == $slug]{
   }`);
 
 const MY_ORDERS_QUERY =
-  defineQuery(`*[_type == 'order' && clerkUserId == $userId] | order(orderData desc){
+  defineQuery(`*[_type == 'order' && clerkUserId == $userId] | order(orderDate desc){
 ...,products[]{
   ...,product->
 }
@@ -81,6 +81,31 @@ const OTHERS_BLOG_QUERY = defineQuery(`*[
     "slug": slug.current,
   }
 }`);
+
+const RELATED_PRODUCTS_QUERY = defineQuery(`*[
+  _type == "product"
+  && variant == $variant
+  && slug.current != $currentSlug
+] | order(name asc)[0...$quantity]{
+  ...,
+  "categories": categories[]->title
+}`);
+
+const COUPON_BY_CODE_QUERY = defineQuery(`*[_type == 'coupon' && lower(code) == lower($code) && (active == true) && (!defined(startsAt) || startsAt <= now()) && (!defined(endsAt) || endsAt >= now())][0]{
+  _id,
+  name,
+  code,
+  percentOff
+}`);
+
+const SALES_TABS_QUERY = defineQuery(`*[_type == 'salesTab' && active == true] | order(priority asc, _createdAt desc){
+  _id,
+  title,
+  isCoupon,
+  couponCode,
+  percentOff
+}`);
+
 export {
   BRANDS_QUERY,
   LATEST_BLOG_QUERY,
@@ -92,5 +117,8 @@ export {
   SINGLE_BLOG_QUERY,
   BLOG_CATEGORIES,
   OTHERS_BLOG_QUERY,
+  RELATED_PRODUCTS_QUERY,
+  COUPON_BY_CODE_QUERY,
+  SALES_TABS_QUERY,
 };
 

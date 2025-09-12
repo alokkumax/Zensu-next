@@ -10,7 +10,7 @@ const PriceFormatter = ({ amount, className }) => {
   });
   return (
     <span
-      className={twMerge("text-sm font-semibold text-darkColor", className)}
+      className={twMerge("text-sm font-semibold text-darkColor font-poppins", className)}
     >
       {formattedPrice}
     </span>

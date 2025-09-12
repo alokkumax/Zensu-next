@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import "../globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import FooterTop from "@/components/FooterTop";
+import SalesTabs from "@/components/SalesTabs";
 
 export default function RootLayout({
   children,
@@ -11,7 +12,8 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-          <div className="flex flex-col min-h-screen">
+          <div className="flex flex-col min-h-screen font-poppins">
+            <SalesTabs />
             <Header />
             <main>{children}</main>
           </div>

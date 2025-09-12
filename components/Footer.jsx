@@ -6,8 +6,7 @@ import SocialMedia from "./SocialMedia";
 import { SubText, SubTitle } from "./ui/text";
 import { categoriesData, quickLinksData } from "@/constants/data";
 import Link from "next/link";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import NewsletterForm from "./NewsletterForm";
 
 const Footer = () => {
   return (
@@ -63,14 +62,11 @@ const Footer = () => {
               Subscribe to our newsletter to receive updates and exclusive
               offers
             </SubText>
-            <form className="space-y-3">
-              <Input placeholder="Enter your email" type="email" required />
-              <Button className="w-full">Subscribe</Button>
-            </form>
+            <NewsletterForm />
           </div>
         </div>
         <div className="py-6 flex justify-center align-items-center border-t text-center text-sm text-gray-600">
-            © {new Date().getFullYear()} &nbsp; <span className="text-darkColor font-semibold">ZENSU.</span>&nbsp;All rights reserved.
+            © {new Date().getFullYear()} &nbsp; <span className="text-darkColor font-semibold font-poppins">ZENSU.</span>&nbsp;All rights reserved.
         </div>
       </Container>
     </footer>

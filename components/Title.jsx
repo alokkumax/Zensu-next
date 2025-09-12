@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 
 const Title = ({ children, className }) => {
   return (
-    <h2 className={twMerge("text-2xl font-semibold", className)}>{children}</h2>
+    <h2 className={twMerge("text-2xl font-semibold font-poppins", className)}>{children}</h2>
   );
 };
 

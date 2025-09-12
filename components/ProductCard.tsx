@@ -69,22 +69,22 @@ const ProductCard = ({ product }: { product: Product }) => {
       </div>
       <div className="px-0 mt-2 mb-2 flex flex-col gap-1">
         {product?.categories && (
-          <p className="text-[#767676] italic text-sm">
+          <p className="text-[#767676] italic text-sm font-poppins font-normal">
             {product.categories.map((cat) => cat._type).join(" · ")}
           </p>
         )}
         <Link href={`/product/${product?.slug?.current}`}>
-          <h3 className="text-[16px] font-medium line-clamp-1 transition-colors">
+          <h3 className="text-[16px] font-medium line-clamp-1 transition-colors font-poppins">
             {product?.name || "Product Name"}
           </h3>
         </Link>
         <PriceView
           price={product?.price}
           discount={product?.discount}
-          className="text-base font-light text-[#767676] text-[14px]"
+          className="text-base font-normal text-[#767676] text-[14px] font-poppins"
         />
         {product?.stock === 0 && (
-          <p className="text-red-500 text-sm font-medium">Out of Stock</p>
+          <p className="text-red-500 text-sm font-medium font-poppins">Out of Stock</p>
         )}
       </div>
     </div>

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-
+/* Fonts are loaded via next/font in app/layout.tsx using Poppins */
 
 @theme {
   --font-poppins: 'Poppins', sans-serif;
@@ -127,5 +127,31 @@
   }
   body {
     @apply bg-background text-foreground; 
+    font-family: var(--font-poppins, 'Poppins', sans-serif);
   } 
+  
+  /* Poppins font weight utilities */
+  .font-thin { font-weight: 100; }
+  .font-extralight { font-weight: 200; }
+  .font-light { font-weight: 300; }
+  .font-normal { font-weight: 400; }
+  .font-medium { font-weight: 500; }
+  .font-semibold { font-weight: 600; }
+  .font-bold { font-weight: 700; }
+  .font-extrabold { font-weight: 800; }
+  .font-black { font-weight: 900; }
+}
+
+/* Custom scrollbar styles for related products */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
+}
+
+/* Smooth horizontal scrolling */
+.overflow-x-auto {
+  scroll-behavior: smooth;
 }
