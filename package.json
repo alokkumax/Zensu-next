@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "typegen": "npx sanity@latest schema extract && npx sanity@latest typegen generate",
+    "sanity:deploy": "npx sanity@latest deploy",
+    "sanity:studio": "npx sanity@latest dev --port 3333",
     "stripe:login": "stripe login",
     "stripe:listen": "stripe listen --forward-to localhost:3000/api/webhooks"
   },

@@ -13,6 +13,8 @@ import {
   SINGLE_BLOG_QUERY,
   COUPON_BY_CODE_QUERY,
   SALES_TABS_QUERY,
+  SEARCH_PRODUCTS_QUERY,
+  ALL_CATEGORIES_QUERY,
 } from "./query";
 
 const getCategories = async (quantity?: number) => {
@@ -205,6 +207,29 @@ export const getSalesTabs = async () => {
     return data ?? [];
   } catch (error) {
     console.log("Error fetching sales tabs:", error);
+    return [];
+  }
+};
+
+export const searchProducts = async (searchTerm: string, limit: number = 4) => {
+  try {
+    const { data } = await sanityFetch({
+      query: SEARCH_PRODUCTS_QUERY,
+      params: { searchTerm: `*${searchTerm}*`, limit },
+    });
+    return data ?? [];
+  } catch (error) {
+    console.log("Error searching products:", error);
+    return [];
+  }
+};
+
+export const getAllCategories = async () => {
+  try {
+    const { data } = await sanityFetch({ query: ALL_CATEGORIES_QUERY });
+    return data ?? [];
+  } catch (error) {
+    console.log("Error fetching all categories:", error);
     return [];
   }
 };

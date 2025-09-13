@@ -87,33 +87,33 @@ const OrdersComponent = ({ orders }: { orders: MY_ORDERS_QUERYResult }) => {
                     )}
                   </TableCell>
                   <TableCell className="px-6 py-4">
-                    <div className="font-medium text-sm">{order.customerName || "N/A"}</div>
+                    <div className="font-medium text-sm">{order.userDetails?.userName || "N/A"}</div>
                   </TableCell>
                   <TableCell className="hidden sm:table-cell px-6 py-4">
                     <div className="text-sm text-gray-600 truncate max-w-[150px]">
-                      {order.email || "N/A"}
+                      {order.userDetails?.userEmail || "N/A"}
                     </div>
                   </TableCell>
                   <TableCell className="px-6 py-4">
                     <PriceFormatter
-                      amount={order?.totalPrice}
+                      amount={order?.orderTotals?.total ? order.orderTotals.total / 100 : 0}
                       className="text-black font-semibold text-sm"
                     />
                   </TableCell>
                   <TableCell className="px-6 py-4">
-                    {order?.status ? getStatusBadge(order.status) : (
+                    {order?.orderStatus ? getStatusBadge(order.orderStatus) : (
                       <Badge className="bg-gray-100 text-gray-800 border-0 text-xs">
                         Unknown
                       </Badge>
                     )}
                   </TableCell>
                   <TableCell className="hidden sm:table-cell px-6 py-4">
-                    {order?.invoice?.number ? (
+                    {order?.stripePaymentDetails?.checkoutSessionId ? (
                       <div className="text-sm font-mono">
-                        {order.invoice.number}
+                        {order.stripePaymentDetails.checkoutSessionId.slice(-8)}
                       </div>
                     ) : (
-                      <span className="text-gray-400 text-sm">No invoice</span>
+                      <span className="text-gray-400 text-sm">No session</span>
                     )}
                   </TableCell>
                   <TableCell className="px-6 py-4 text-center">

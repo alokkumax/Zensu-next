@@ -12,6 +12,7 @@ export interface Metadata {
   customerEmail: string;
   clerkUserId?: string;
   address?: Address | null;
+  phone?: string;
 }
 
 export interface GroupedCartItems {
@@ -37,7 +38,8 @@ export async function createCheckoutSession(
         customerName: metadata.customerName,
         customerEmail: metadata.customerEmail,
         clerkUserId: metadata.clerkUserId!,
-        // address: JSON.stringify(metadata.address),
+        address: metadata.address ? JSON.stringify(metadata.address) : '',
+        phone: metadata.phone || '',
       },
       mode: "payment",
       allow_promotion_codes: true,

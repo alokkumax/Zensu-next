@@ -1,92 +1,105 @@
-import { HomeIcon } from "@sanity/icons";
 import { defineField, defineType } from "sanity";
+import { HomeIcon } from "@sanity/icons";
 
 export const addressType = defineType({
   name: "address",
-  title: "Addresses",
+  title: "Address",
   type: "document",
   icon: HomeIcon,
   fields: [
     defineField({
+      name: "userEmail",
+      title: "User Email",
+      type: "string",
+      validation: (Rule) => Rule.required().email(),
+      description: "Email address of the user who owns this address"
+    }),
+    defineField({
       name: "name",
       title: "Address Name",
       type: "string",
-      description: "A friendly name for this address (e.g. Home, Work)",
-      validation: (Rule) => Rule.required().max(50),
+      validation: (Rule) => Rule.required(),
+      description: "Name for this address (e.g., Home, Office, etc.)"
     }),
     defineField({
-      name: "email",
-      title: "User Email",
-      type: "email",
+      name: "fullName",
+      title: "Full Name",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+      description: "Recipient's full name"
     }),
     defineField({
       name: "address",
-      title: "Street Address",
+      title: "Full Address",
+      type: "text",
+      validation: (Rule) => Rule.required(),
+      description: "Complete address including street, building, etc."
+    }),
+    defineField({
+      name: "road",
+      title: "Road/Street",
       type: "string",
-      description: "The street address including apartment/unit number",
-      validation: (Rule) => Rule.required().min(5).max(100),
+      validation: (Rule) => Rule.required(),
+      description: "Road or street name"
+    }),
+    defineField({
+      name: "pinCode",
+      title: "PIN Code",
+      type: "string",
+      validation: (Rule) => Rule.required().min(6).max(6),
+      description: "6-digit PIN code"
+    }),
+    defineField({
+      name: "country",
+      title: "Country",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+      initialValue: "India"
+    }),
+    defineField({
+      name: "state",
+      title: "State",
+      type: "string",
+      validation: (Rule) => Rule.required(),
+      description: "State or province"
     }),
     defineField({
       name: "city",
       title: "City",
       type: "string",
       validation: (Rule) => Rule.required(),
+      description: "City name"
     }),
     defineField({
-      name: "state",
-      title: "State",
-      type: "string",
-      description: "Two letter state code (e.g. NY, CA)",
-      validation: (Rule) => Rule.required().length(2).uppercase(),
-    }),
-    defineField({
-      name: "zip",
-      title: "ZIP Code",
-      type: "string",
-      description: "Format: 12345 or 12345-6789",
-      validation: (Rule) =>
-        Rule.required()
-          .regex(/^\d{5}(-\d{4})?$/, {
-            name: "zipCode",
-            invert: false,
-          })
-          .custom((zip: string | undefined) => {
-            if (!zip) {
-              return "ZIP code is required";
-            }
-            if (!zip.match(/^\d{5}(-\d{4})?$/)) {
-              return "Please enter a valid ZIP code (e.g. 12345 or 12345-6789)";
-            }
-            return true;
-          }),
-    }),
-    defineField({
-      name: "default",
+      name: "isDefault",
       title: "Default Address",
       type: "boolean",
-      description: "Is this the default shipping address?",
       initialValue: false,
+      description: "Set as default address for this user"
     }),
-
     defineField({
-      name: "createdAt",
-      title: "Created At",
-      type: "datetime",
-      initialValue: () => new Date().toISOString(),
-    }),
+      name: "phoneNumber",
+      title: "Phone Number",
+      type: "string",
+      validation: (Rule) => Rule.required().min(10).max(15),
+      description: "Contact phone number"
+    })
   ],
   preview: {
     select: {
-      title: "name",
-      subtitle: "address",
+      name: "name",
+      fullName: "fullName",
+      address: "address",
       city: "city",
       state: "state",
-      isDefault: "default",
+      userEmail: "userEmail"
     },
-    prepare({ title, subtitle, city, state, isDefault }) {
+    prepare(selection) {
+      const { name, fullName, address, city, state, userEmail } = selection;
       return {
-        title: `${title} ${isDefault ? "(Default)" : ""}`,
-        subtitle: `${subtitle}, ${city}, ${state}`,
+        title: `${name} - ${fullName}`,
+        subtitle: `${address}, ${city}, ${state} (${userEmail})`,
+        media: HomeIcon,
       };
     },
   },

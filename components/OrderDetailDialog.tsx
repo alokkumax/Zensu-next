@@ -82,13 +82,13 @@ const OrderDetailDialog: React.FC<OrderDetailsDialogProps> = ({
                 <div className="flex items-start gap-2">
                   <User size={14} className="text-gray-400 mt-0.5 flex-shrink-0" />
                   <div>
-                    <span className="font-medium">{order.customerName || "N/A"}</span>
+                    <span className="font-medium">{order.userDetails?.userName || "N/A"}</span>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
                   <Mail size={14} className="text-gray-400 mt-0.5 flex-shrink-0" />
                   <div className="break-all">
-                    <span className="text-gray-600">{order.email || "N/A"}</span>
+                    <span className="text-gray-600">{order.userDetails?.userEmail || "N/A"}</span>
                   </div>
                 </div>
                 <div className="flex items-start gap-2">
@@ -113,7 +113,7 @@ const OrderDetailDialog: React.FC<OrderDetailsDialogProps> = ({
               <div className="space-y-2 text-sm bg-gray-50 p-4 rounded-md">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Status:</span>
-                  {order.status ? getStatusBadge(order.status) : (
+                  {order.orderStatus ? getStatusBadge(order.orderStatus) : (
                     <Badge className="bg-gray-100 text-gray-800 border-0 text-xs">
                       Unknown
                     </Badge>
@@ -125,12 +125,16 @@ const OrderDetailDialog: React.FC<OrderDetailsDialogProps> = ({
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Currency:</span>
-                  <span className="uppercase text-xs">{order.currency || "USD"}</span>
+                  <span className="uppercase text-xs">{order.stripePaymentDetails?.currency || "INR"}</span>
                 </div>
-                {order?.invoice?.number && (
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Payment Status:</span>
+                  <span className="text-xs">{order.stripePaymentDetails?.status || "Unknown"}</span>
+                </div>
+                {order.stripePaymentDetails?.last4 && (
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Invoice:</span>
-                    <span className="font-mono text-xs">{order.invoice.number}</span>
+                    <span className="text-gray-600">Card:</span>
+                    <span className="font-mono text-xs">****{order.stripePaymentDetails.last4}</span>
                   </div>
                 )}
               </div>
@@ -138,16 +142,19 @@ const OrderDetailDialog: React.FC<OrderDetailsDialogProps> = ({
           </div>
 
           {/* Shipping Address */}
-          {order.address && (
+          {order.selectedAddress && (
             <div className="space-y-3">
               <h3 className="text-base font-semibold flex items-center gap-2">
                 <MapPin size={16} />
                 Shipping Address
               </h3>
               <div className="bg-gray-50 p-4 rounded-md text-sm">
-                <div className="font-medium">{order.address.name}</div>
-                <div className="text-gray-600 break-words">{order.address.address}</div>
-                <div className="text-gray-600">{order.address.city}, {order.address.state} {order.address.zip}</div>
+                <div className="font-medium">{order.selectedAddress.fullName}</div>
+                <div className="text-gray-600 break-words">{order.selectedAddress.address}</div>
+                <div className="text-gray-600">{order.selectedAddress.city}, {order.selectedAddress.state} {order.selectedAddress.pinCode}</div>
+                {order.selectedAddress.phone && (
+                  <div className="text-gray-600">Phone: {order.selectedAddress.phone}</div>
+                )}
               </div>
             </div>
           )}
@@ -170,9 +177,9 @@ const OrderDetailDialog: React.FC<OrderDetailsDialogProps> = ({
                     <TableRow key={index} className="border-b">
                       <TableCell className="py-4">
                         <div className="flex items-start gap-3">
-                          {product?.product?.images && (
+                          {product?.image && (
                             <Image
-                              src={urlFor(product?.product?.images[0]).url()}
+                              src={product.image}
                               alt="productImage"
                               width={60}
                               height={60}
@@ -181,13 +188,11 @@ const OrderDetailDialog: React.FC<OrderDetailsDialogProps> = ({
                           )}
                           <div className="min-w-0 flex-1">
                             <div className="font-medium text-sm mb-1">
-                              {product?.product?.name || "Unknown Product"}
+                              {product?.productName || "Unknown Product"}
                             </div>
-                            {product?.product?.description && (
-                              <div className="text-xs text-gray-500 leading-relaxed">
-                                {product.product.description}
-                              </div>
-                            )}
+                            <div className="text-xs text-gray-500">
+                              ID: {product?.productId || "N/A"}
+                            </div>
                           </div>
                         </div>
                       </TableCell>
@@ -196,13 +201,13 @@ const OrderDetailDialog: React.FC<OrderDetailsDialogProps> = ({
                       </TableCell>
                       <TableCell className="text-right py-4">
                         <PriceFormatter
-                          amount={product?.product?.price}
+                          amount={product?.price ? product.price / 100 : 0}
                           className="text-black font-medium text-sm"
                         />
                       </TableCell>
                       <TableCell className="text-right py-4">
                         <PriceFormatter
-                          amount={(product?.product?.price || 0) * (product?.quantity || 0)}
+                          amount={product?.price && product?.quantity ? (product.price * product.quantity) / 100 : 0}
                           className="text-black font-semibold text-sm"
                         />
                       </TableCell>
@@ -216,29 +221,45 @@ const OrderDetailDialog: React.FC<OrderDetailsDialogProps> = ({
           {/* Order Summary */}
           <div className="flex justify-end">
             <div className="w-72 space-y-2 bg-gray-50 p-4 rounded-md">
-              {order?.amountDiscount && order.amountDiscount > 0 && (
-                <>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Subtotal:</span>
-                    <PriceFormatter
-                      amount={(order?.totalPrice || 0) + (order?.amountDiscount || 0)}
-                      className="text-black font-medium"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between text-sm text-green-600">
-                    <span>Discount:</span>
-                    <PriceFormatter
-                      amount={-order.amountDiscount}
-                      className="font-medium"
-                    />
-                  </div>
-                </>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Subtotal:</span>
+                <PriceFormatter
+                  amount={order?.orderTotals?.subtotal ? order.orderTotals.subtotal / 100 : 0}
+                  className="text-black font-medium"
+                />
+              </div>
+              {order?.orderTotals?.discount && order.orderTotals.discount > 0 && (
+                <div className="flex items-center justify-between text-sm text-green-600">
+                  <span>Discount:</span>
+                  <PriceFormatter
+                    amount={-order.orderTotals.discount / 100}
+                    className="font-medium"
+                  />
+                </div>
+              )}
+              {order?.orderTotals?.shipping && order.orderTotals.shipping > 0 && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Shipping:</span>
+                  <PriceFormatter
+                    amount={order.orderTotals.shipping / 100}
+                    className="text-black font-medium"
+                  />
+                </div>
+              )}
+              {order?.orderTotals?.tax && order.orderTotals.tax > 0 && (
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-600">Tax:</span>
+                  <PriceFormatter
+                    amount={order.orderTotals.tax / 100}
+                    className="text-black font-medium"
+                  />
+                </div>
               )}
               <div className="border-t pt-2">
                 <div className="flex items-center justify-between text-base font-semibold">
                   <span>Total:</span>
                   <PriceFormatter
-                    amount={order?.totalPrice}
+                    amount={order?.orderTotals?.total ? order.orderTotals.total / 100 : 0}
                     className="text-black"
                   />
                 </div>
@@ -246,19 +267,32 @@ const OrderDetailDialog: React.FC<OrderDetailsDialogProps> = ({
             </div>
           </div>
 
-          {/* Invoice Download */}
-          {order?.invoice?.hosted_invoice_url && (
-            <div className="flex justify-center pt-2">
-              <Button asChild className="bg-green-600 hover:bg-green-700 text-sm">
-                <Link 
-                  href={order.invoice.hosted_invoice_url} 
-                  target="_blank"
-                  className="flex items-center gap-2"
-                >
-                  <Download size={14} />
-                  Download Invoice
-                </Link>
-              </Button>
+          {/* Additional Order Info */}
+          {order?.trackingNumber && (
+            <div className="space-y-3">
+              <h3 className="text-base font-semibold">Tracking Information</h3>
+              <div className="bg-gray-50 p-4 rounded-md text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Tracking Number:</span>
+                  <span className="font-mono">{order.trackingNumber}</span>
+                </div>
+                {order.shippingMethod && (
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-gray-600">Shipping Method:</span>
+                    <span>{order.shippingMethod}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Order Notes */}
+          {order?.notes && (
+            <div className="space-y-3">
+              <h3 className="text-base font-semibold">Order Notes</h3>
+              <div className="bg-gray-50 p-4 rounded-md text-sm">
+                <p className="text-gray-700">{order.notes}</p>
+              </div>
             </div>
           )}
         </div>

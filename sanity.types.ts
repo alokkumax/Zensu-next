@@ -13,20 +13,81 @@
  */
 
 // Source: schema.json
+export type SalesTab = {
+  _id: string;
+  _type: "salesTab";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  title?: string;
+  isCoupon?: boolean;
+  couponCode?: string;
+  percentOff?: number;
+  active?: boolean;
+  priority?: number;
+};
+
+export type Coupon = {
+  _id: string;
+  _type: "coupon";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  code?: string;
+  percentOff?: number;
+  active?: boolean;
+  startsAt?: string;
+  endsAt?: string;
+};
+
+export type NewsletterSubscription = {
+  _id: string;
+  _type: "newsletterSubscription";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  email?: string;
+  clerkUserId?: string;
+  accountEmail?: string;
+  accountName?: string;
+  createdAt?: string;
+};
+
+export type ContactForm = {
+  _id: string;
+  _type: "contactForm";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  subject?: string;
+  message?: string;
+  clerkUserId?: string;
+  accountEmail?: string;
+  accountName?: string;
+  createdAt?: string;
+};
+
 export type Address = {
   _id: string;
   _type: "address";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
+  userEmail?: string;
   name?: string;
-  email?: string;
+  fullName?: string;
   address?: string;
-  city?: string;
+  road?: string;
+  pinCode?: string;
+  country?: string;
   state?: string;
-  zip?: string;
-  default?: boolean;
-  createdAt?: string;
+  city?: string;
+  isDefault?: boolean;
+  phoneNumber?: string;
 };
 
 export type Blogcategory = {
@@ -148,46 +209,57 @@ export type Author = {
   }>;
 };
 
-export type Order = {
+export type Orders = {
   _id: string;
-  _type: "order";
+  _type: "orders";
   _createdAt: string;
   _updatedAt: string;
   _rev: string;
   orderNumber?: string;
-  invoice?: {
-    id?: string;
-    number?: string;
-    hosted_invoice_url?: string;
-  };
-  stripeCheckoutSessionId?: string;
-  stripeCustomerId?: string;
-  clerkUserId?: string;
-  customerName?: string;
-  email?: string;
-  stripePaymentIntentId?: string;
   products?: Array<{
-    product?: {
-      _ref: string;
-      _type: "reference";
-      _weak?: boolean;
-      [internalGroqTypeReferenceTo]?: "product";
-    };
+    productName?: string;
+    productId?: string;
     quantity?: number;
+    price?: number;
+    image?: string;
     _key: string;
   }>;
-  totalPrice?: number;
-  currency?: string;
-  amountDiscount?: number;
-  address?: {
-    state?: string;
-    zip?: string;
-    city?: string;
+  selectedAddress?: {
+    fullName?: string;
     address?: string;
-    name?: string;
+    city?: string;
+    state?: string;
+    pinCode?: string;
+    phone?: string;
   };
-  status?: "pending" | "processing" | "paid" | "shipped" | "out_for_delivery" | "delivered" | "cancelled";
+  userDetails?: {
+    userId?: string;
+    userName?: string;
+    userEmail?: string;
+    userPhone?: string;
+  };
+  stripePaymentDetails?: {
+    paymentIntentId?: string;
+    checkoutSessionId?: string;
+    amount?: number;
+    currency?: string;
+    status?: "pending" | "succeeded" | "failed" | "cancelled" | "refunded";
+    paymentMethod?: string;
+    last4?: string;
+    brand?: string;
+  };
+  orderTotals?: {
+    subtotal?: number;
+    discount?: number;
+    shipping?: number;
+    tax?: number;
+    total?: number;
+  };
   orderDate?: string;
+  orderStatus?: "pending" | "processing" | "shipped" | "delivered" | "cancelled" | "refunded";
+  notes?: string;
+  trackingNumber?: string;
+  shippingMethod?: string;
 };
 
 export type Product = {
@@ -449,7 +521,7 @@ export type SanityAssetSourceData = {
   url?: string;
 };
 
-export type AllSanitySchemaTypes = Address | Blogcategory | Blog | Author | Order | Product | Brand | BlockContent | Category | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
+export type AllSanitySchemaTypes = SalesTab | Coupon | NewsletterSubscription | ContactForm | Address | Blogcategory | Blog | Author | Orders | Product | Brand | BlockContent | Category | SanityImagePaletteSwatch | SanityImagePalette | SanityImageDimensions | SanityImageHotspot | SanityImageCrop | SanityFileAsset | SanityImageAsset | SanityImageMetadata | Geopoint | Slug | SanityAssetSourceData;
 export declare const internalGroqTypeReferenceTo: unique symbol;
 // Source: ./sanity/queries/query.ts
 // Variable: BRANDS_QUERY
@@ -665,101 +737,53 @@ export type BRAND_QUERYResult = Array<{
   brandName: string | null;
 }>;
 // Variable: MY_ORDERS_QUERY
-// Query: *[_type == 'order' && clerkUserId == $userId] | order(orderData desc){...,products[]{  ...,product->}}
+// Query: *[_type == 'orders' && userDetails.userId == $userId] | order(orderDate desc){    _id,    orderNumber,    products[]{      productName,      productId,      quantity,      price,      image    },    selectedAddress,    userDetails,    stripePaymentDetails,    orderTotals,    orderDate,    orderStatus,    trackingNumber,    shippingMethod,    notes  }
 export type MY_ORDERS_QUERYResult = Array<{
   _id: string;
-  _type: "order";
-  _createdAt: string;
-  _updatedAt: string;
-  _rev: string;
-  orderNumber?: string;
-  invoice?: {
-    id?: string;
-    number?: string;
-    hosted_invoice_url?: string;
-  };
-  stripeCheckoutSessionId?: string;
-  stripeCustomerId?: string;
-  clerkUserId?: string;
-  customerName?: string;
-  email?: string;
-  stripePaymentIntentId?: string;
+  orderNumber: string | null;
   products: Array<{
-    product: {
-      _id: string;
-      _type: "product";
-      _createdAt: string;
-      _updatedAt: string;
-      _rev: string;
-      name?: string;
-      slug?: Slug;
-      images?: Array<{
-        asset?: {
-          _ref: string;
-          _type: "reference";
-          _weak?: boolean;
-          [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
-        };
-        media?: unknown;
-        hotspot?: SanityImageHotspot;
-        crop?: SanityImageCrop;
-        _type: "image";
-        _key: string;
-      }>;
-      videos?: Array<{
-        upload?: {
-          asset?: {
-            _ref: string;
-            _type: "reference";
-            _weak?: boolean;
-            [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
-          };
-          media?: unknown;
-          _type: "file";
-        };
-        url?: string;
-        _key: string;
-      }>;
-      description?: string;
-      price?: number;
-      discount?: number;
-      priceUAE?: number;
-      discountUAE?: number;
-      priceNPR?: number;
-      discountNPR?: number;
-      categories?: Array<{
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        _key: string;
-        [internalGroqTypeReferenceTo]?: "category";
-      }>;
-      stock?: number;
-      brand?: {
-        _ref: string;
-        _type: "reference";
-        _weak?: boolean;
-        [internalGroqTypeReferenceTo]?: "brand";
-      };
-      status?: "hot" | "new" | "sale";
-      variant?: "bagpacks" | "handbags" | "others" | "suitcases";
-      isFeatured?: boolean;
-    } | null;
-    quantity?: number;
-    _key: string;
+    productName: string | null;
+    productId: string | null;
+    quantity: number | null;
+    price: number | null;
+    image: string | null;
   }> | null;
-  totalPrice?: number;
-  currency?: string;
-  amountDiscount?: number;
-  address?: {
-    state?: string;
-    zip?: string;
-    city?: string;
+  selectedAddress: {
+    fullName?: string;
     address?: string;
-    name?: string;
-  };
-  status?: "cancelled" | "delivered" | "out_for_delivery" | "paid" | "pending" | "processing" | "shipped";
-  orderDate?: string;
+    city?: string;
+    state?: string;
+    pinCode?: string;
+    phone?: string;
+  } | null;
+  userDetails: {
+    userId?: string;
+    userName?: string;
+    userEmail?: string;
+    userPhone?: string;
+  } | null;
+  stripePaymentDetails: {
+    paymentIntentId?: string;
+    checkoutSessionId?: string;
+    amount?: number;
+    currency?: string;
+    status?: "cancelled" | "failed" | "pending" | "refunded" | "succeeded";
+    paymentMethod?: string;
+    last4?: string;
+    brand?: string;
+  } | null;
+  orderTotals: {
+    subtotal?: number;
+    discount?: number;
+    shipping?: number;
+    tax?: number;
+    total?: number;
+  } | null;
+  orderDate: string | null;
+  orderStatus: "cancelled" | "delivered" | "pending" | "processing" | "refunded" | "shipped" | null;
+  trackingNumber: string | null;
+  shippingMethod: string | null;
+  notes: string | null;
 }>;
 // Variable: GET_ALL_BLOG
 // Query: *[_type == 'blog'] | order(publishedAt desc)[0...$quantity]{  ...,       blogcategories[]->{    title}    }
@@ -949,6 +973,111 @@ export type OTHERS_BLOG_QUERYResult = Array<{
   } | null;
   categories: null;
 }>;
+// Variable: RELATED_PRODUCTS_QUERY
+// Query: *[  _type == "product"  && variant == $variant  && slug.current != $currentSlug] | order(name asc)[0...$quantity]{  ...,  "categories": categories[]->title}
+export type RELATED_PRODUCTS_QUERYResult = Array<{
+  _id: string;
+  _type: "product";
+  _createdAt: string;
+  _updatedAt: string;
+  _rev: string;
+  name?: string;
+  slug?: Slug;
+  images?: Array<{
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+    _key: string;
+  }>;
+  videos?: Array<{
+    upload?: {
+      asset?: {
+        _ref: string;
+        _type: "reference";
+        _weak?: boolean;
+        [internalGroqTypeReferenceTo]?: "sanity.fileAsset";
+      };
+      media?: unknown;
+      _type: "file";
+    };
+    url?: string;
+    _key: string;
+  }>;
+  description?: string;
+  price?: number;
+  discount?: number;
+  priceUAE?: number;
+  discountUAE?: number;
+  priceNPR?: number;
+  discountNPR?: number;
+  categories: Array<string | null> | null;
+  stock?: number;
+  brand?: {
+    _ref: string;
+    _type: "reference";
+    _weak?: boolean;
+    [internalGroqTypeReferenceTo]?: "brand";
+  };
+  status?: "hot" | "new" | "sale";
+  variant?: "bagpacks" | "handbags" | "others" | "suitcases";
+  isFeatured?: boolean;
+}>;
+// Variable: COUPON_BY_CODE_QUERY
+// Query: *[_type == 'coupon' && lower(code) == lower($code) && (active == true) && (!defined(startsAt) || startsAt <= now()) && (!defined(endsAt) || endsAt >= now())][0]{  _id,  name,  code,  percentOff}
+export type COUPON_BY_CODE_QUERYResult = {
+  _id: string;
+  name: string | null;
+  code: string | null;
+  percentOff: number | null;
+} | null;
+// Variable: SALES_TABS_QUERY
+// Query: *[_type == 'salesTab' && active == true] | order(priority asc, _createdAt desc){  _id,  title,  isCoupon,  couponCode,  percentOff}
+export type SALES_TABS_QUERYResult = Array<{
+  _id: string;
+  title: string | null;
+  isCoupon: boolean | null;
+  couponCode: string | null;
+  percentOff: number | null;
+}>;
+// Variable: SEARCH_PRODUCTS_QUERY
+// Query: *[_type == "product" && (name match $searchTerm || description match $searchTerm || categories[]->title match $searchTerm)] | order(name asc)[0...$limit]{  _id,  name,  slug,  price,  discount,  images,  "categories": categories[]->title,  variant}
+export type SEARCH_PRODUCTS_QUERYResult = Array<{
+  _id: string;
+  name: string | null;
+  slug: Slug | null;
+  price: number | null;
+  discount: number | null;
+  images: Array<{
+    asset?: {
+      _ref: string;
+      _type: "reference";
+      _weak?: boolean;
+      [internalGroqTypeReferenceTo]?: "sanity.imageAsset";
+    };
+    media?: unknown;
+    hotspot?: SanityImageHotspot;
+    crop?: SanityImageCrop;
+    _type: "image";
+    _key: string;
+  }> | null;
+  categories: Array<string | null> | null;
+  variant: "bagpacks" | "handbags" | "others" | "suitcases" | null;
+}>;
+// Variable: ALL_CATEGORIES_QUERY
+// Query: *[_type == 'category'] | order(title asc) {  _id,  title,  slug,  "productCount": count(*[_type == "product" && references(^._id)])}
+export type ALL_CATEGORIES_QUERYResult = Array<{
+  _id: string;
+  title: string | null;
+  slug: Slug | null;
+  productCount: number;
+}>;
 
 // Query TypeMap
 import "@sanity/client";
@@ -959,10 +1088,15 @@ declare module "@sanity/client" {
     "*[_type == 'product' && status == 'hot'] | order(name asc){\n    ...,\"categories\": categories[]->title\n  }": DEAL_PRODUCTSResult;
     "*[_type == \"product\" && slug.current == $slug] | order(name asc) [0]": PRODUCT_BY_SLUG_QUERYResult;
     "*[_type == \"product\" && slug.current == $slug]{\n  \"brandName\": brand->title\n  }": BRAND_QUERYResult;
-    "*[_type == 'order' && clerkUserId == $userId] | order(orderData desc){\n...,products[]{\n  ...,product->\n}\n}": MY_ORDERS_QUERYResult;
+    "*[_type == 'orders' && userDetails.userId == $userId] | order(orderDate desc){\n    _id,\n    orderNumber,\n    products[]{\n      productName,\n      productId,\n      quantity,\n      price,\n      image\n    },\n    selectedAddress,\n    userDetails,\n    stripePaymentDetails,\n    orderTotals,\n    orderDate,\n    orderStatus,\n    trackingNumber,\n    shippingMethod,\n    notes\n  }": MY_ORDERS_QUERYResult;
     "*[_type == 'blog'] | order(publishedAt desc)[0...$quantity]{\n  ...,  \n     blogcategories[]->{\n    title\n}\n    }\n  ": GET_ALL_BLOGResult;
     "*[_type == \"blog\" && slug.current == $slug][0]{\n  ..., \n    author->{\n    name,\n    image,\n  },\n  blogcategories[]->{\n    title,\n    \"slug\": slug.current,\n  },\n}": SINGLE_BLOG_QUERYResult;
     "*[_type == \"blog\"]{\n     blogcategories[]->{\n    ...\n    }\n  }": BLOG_CATEGORIESResult;
     "*[\n  _type == \"blog\"\n  && defined(slug.current)\n  && slug.current != $slug\n]|order(publishedAt desc)[0...$quantity]{\n...\n  publishedAt,\n  title,\n  mainImage,\n  slug,\n  author->{\n    name,\n    image,\n  },\n  categories[]->{\n    title,\n    \"slug\": slug.current,\n  }\n}": OTHERS_BLOG_QUERYResult;
+    "*[\n  _type == \"product\"\n  && variant == $variant\n  && slug.current != $currentSlug\n] | order(name asc)[0...$quantity]{\n  ...,\n  \"categories\": categories[]->title\n}": RELATED_PRODUCTS_QUERYResult;
+    "*[_type == 'coupon' && lower(code) == lower($code) && (active == true) && (!defined(startsAt) || startsAt <= now()) && (!defined(endsAt) || endsAt >= now())][0]{\n  _id,\n  name,\n  code,\n  percentOff\n}": COUPON_BY_CODE_QUERYResult;
+    "*[_type == 'salesTab' && active == true] | order(priority asc, _createdAt desc){\n  _id,\n  title,\n  isCoupon,\n  couponCode,\n  percentOff\n}": SALES_TABS_QUERYResult;
+    "*[_type == \"product\" && (name match $searchTerm || description match $searchTerm || categories[]->title match $searchTerm)] | order(name asc)[0...$limit]{\n  _id,\n  name,\n  slug,\n  price,\n  discount,\n  images,\n  \"categories\": categories[]->title,\n  variant\n}": SEARCH_PRODUCTS_QUERYResult;
+    "*[_type == 'category'] | order(title asc) {\n  _id,\n  title,\n  slug,\n  \"productCount\": count(*[_type == \"product\" && references(^._id)])\n}": ALL_CATEGORIES_QUERYResult;
   }
 }

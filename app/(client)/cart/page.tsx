@@ -33,6 +33,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
+import AddressSelection from "@/components/AddressSelection";
 
 const CartPage = () => {
   const {
@@ -47,33 +48,11 @@ const CartPage = () => {
   const [couponCode, setCouponCode] = useState("");
   const [couponPercent, setCouponPercent] = useState<number>(0);
   const [couponError, setCouponError] = useState<string>("");
+  const [selectedAddress, setSelectedAddress] = useState<any>(null);
   const groupedItems = useStore((state) => state.getGroupedItems());
   const { isSignedIn } = useAuth();
   const { user } = useUser();
-  // const [addresses, setAddresses] = useState<Address[] | null>(null);
-  // const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
 
-  const fetchAddresses = async () => {
-    setLoading(true);
-    try {
-      const query = `*[_type=="address"] | order(publishedAt desc)`;
-      const data = await client.fetch(query);
-      setAddresses(data);
-      const defaultAddress = data.find((addr: Address) => addr.default);
-      if (defaultAddress) {
-        setSelectedAddress(defaultAddress);
-      } else if (data.length > 0) {
-        setSelectedAddress(data[0]); // Optional: select first address if no default
-      }
-    } catch (error) {
-      console.log("Addresses fetching error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  // useEffect(() => {
-  //   fetchAddresses();
-  // }, []);
   const handleResetCart = () => {
     const confirmed = window.confirm(
       "Are you sure you want to reset your cart?"
@@ -92,7 +71,7 @@ const CartPage = () => {
         customerName: user?.fullName ?? "Unknown",
         customerEmail: user?.emailAddresses[0]?.emailAddress ?? "Unknown",
         clerkUserId: user?.id,
-        // address: selectedAddress,
+        address: selectedAddress,
       };
       console.log(metadata);
       console.log(groupedItems)
@@ -304,49 +283,15 @@ const CartPage = () => {
                         </Button>
                       </div>
                     </div>
-                    {/* {addresses && (
-                      <div className="bg-white -md mt-5">
-                        <Card>
-                          <CardHeader>
-                            <CardTitle>Delivery Address</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <RadioGroup
-                              defaultValue={addresses
-                                ?.find((addr) => addr.default)
-                                ?._id.toString()}
-                            >
-                              {addresses?.map((address) => (
-                                <div
-                                  key={address?._id}
-                                  onClick={() => setSelectedAddress(address)}
-                                  className={`flex items-center space-x-2 mb-4 cursor-pointer ${selectedAddress?._id === address?._id && "text-shop_dark_green"}`}
-                                >
-                                  <RadioGroupItem
-                                    value={address?._id.toString()}
-                                  />
-                                  <Label
-                                    htmlFor={`address-${address?._id}`}
-                                    className="grid gap-1.5 flex-1"
-                                  >
-                                    <span className="font-semibold">
-                                      {address?.name}
-                                    </span>
-                                    <span className="text-sm text-black/60">
-                                      {address.address}, {address.city},{" "}
-                                      {address.state} {address.zip}
-                                    </span>
-                                  </Label>
-                                </div>
-                              ))}
-                            </RadioGroup>
-                            <Button variant="outline" className="w-full mt-4">
-                              Add New Address
-                            </Button>
-                          </CardContent>
-                        </Card>
+                    {user?.emailAddresses?.[0]?.emailAddress && (
+                      <div className="mt-5">
+                        <AddressSelection
+                          userEmail={user.emailAddresses[0].emailAddress}
+                          selectedAddress={selectedAddress}
+                          onAddressSelect={setSelectedAddress}
+                        />
                       </div>
-                    )} */}
+                    )}
                   </div>
                 </div>
                 {/* Order summary for mobile view */}

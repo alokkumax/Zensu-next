@@ -26,11 +26,16 @@ const BRAND_QUERY = defineQuery(`*[_type == "product" && slug.current == $slug]{
   }`);
 
 const MY_ORDERS_QUERY =
-  defineQuery(`*[_type == 'order' && clerkUserId == $userId] | order(orderDate desc){
-...,products[]{
-  ...,product->
-}
-}`);
+  defineQuery(`*[_type == 'order' && userDetails.userId == $userId] | order(orderDate desc){
+    _id,
+    orderNumber,
+    productName,
+    selectedAddress,
+    userDetails,
+    stripePaymentDetails,
+    orderDate,
+    orderStatus
+  }`);
 const GET_ALL_BLOG = defineQuery(
   `*[_type == 'blog'] | order(publishedAt desc)[0...$quantity]{
   ...,  
@@ -106,6 +111,24 @@ const SALES_TABS_QUERY = defineQuery(`*[_type == 'salesTab' && active == true] |
   percentOff
 }`);
 
+const SEARCH_PRODUCTS_QUERY = defineQuery(`*[_type == "product" && (name match $searchTerm || description match $searchTerm || categories[]->title match $searchTerm)] | order(name asc)[0...$limit]{
+  _id,
+  name,
+  slug,
+  price,
+  discount,
+  images,
+  "categories": categories[]->title,
+  variant
+}`);
+
+const ALL_CATEGORIES_QUERY = defineQuery(`*[_type == 'category'] | order(title asc) {
+  _id,
+  title,
+  slug,
+  "productCount": count(*[_type == "product" && references(^._id)])
+}`);
+
 export {
   BRANDS_QUERY,
   LATEST_BLOG_QUERY,
@@ -120,5 +143,7 @@ export {
   RELATED_PRODUCTS_QUERY,
   COUPON_BY_CODE_QUERY,
   SALES_TABS_QUERY,
+  SEARCH_PRODUCTS_QUERY,
+  ALL_CATEGORIES_QUERY,
 };
 

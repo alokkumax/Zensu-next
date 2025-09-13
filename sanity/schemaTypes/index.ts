@@ -28,5 +28,5 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     newsletterSubscriptionType,
     couponType,
     salesTabType,
-  ],
+],
 };

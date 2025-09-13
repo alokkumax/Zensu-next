@@ -57,9 +57,13 @@ const OrdersPage = () => {
           // If API fails, try direct Sanity query as fallback
           console.log("Orders Page - API failed, trying direct Sanity query...");
           const directOrders = await client.fetch(
-            `*[_type == 'order' && clerkUserId == $userId] | order(orderDate desc){
+            `*[_type == 'orders' && userDetails.userId == $userId] | order(orderDate desc){
               ...,products[]{
-                ...,product->
+                productName,
+                productId,
+                quantity,
+                price,
+                image
               }
             }`,
             { userId: user.id }
@@ -77,9 +81,13 @@ const OrdersPage = () => {
         try {
           console.log("Orders Page - Trying final fallback with direct Sanity query...");
           const directOrders = await client.fetch(
-            `*[_type == 'order' && clerkUserId == $userId] | order(orderDate desc){
+            `*[_type == 'orders' && userDetails.userId == $userId] | order(orderDate desc){
               ...,products[]{
-                ...,product->
+                productName,
+                productId,
+                quantity,
+                price,
+                image
               }
             }`,
             { userId: user.id }
