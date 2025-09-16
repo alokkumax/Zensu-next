@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
         }`,
         { startDate: startDateISO }
       ).then(orders => 
-        orders.reduce((sum, order) => sum + (order.orderTotals?.total || 0), 0)
+        orders.reduce((sum: number, order: { orderTotals?: { total?: number } }) => sum + (order.orderTotals?.total || 0), 0)
       ),
       
       // Orders by status
@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
         }`,
         { startDate: startDateISO }
       ).then(orders => {
-        const statusCounts = orders.reduce((acc, order) => {
+        const statusCounts = orders.reduce((acc: Record<string, number>, order: { orderStatus?: string }) => {
           const status = order.orderStatus || 'unknown';
           acc[status] = (acc[status] || 0) + 1;
           return acc;
