@@ -36,7 +36,6 @@ const Shop = ({ categories }: Props) => {
   const fetchProducts = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
     try {
-      // Optimized query with better filtering
       const query = `
       *[_type == 'product' 
         && (!defined($selectedCategory) || references(*[_type == "category" && slug.current == $selectedCategory]._id))
