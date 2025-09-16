@@ -27,9 +27,8 @@ const OrdersPage = () => {
       }
       
       if (!user) {
-        console.log("Orders Page - No user found, setting error state");
-        setError("Please sign in to view your orders");
-        setLoading(false);
+        console.log("Orders Page - No user found, redirecting");
+        redirect("/");
         return;
       }
 
@@ -149,19 +148,12 @@ const OrdersPage = () => {
             <p><strong>Authentication Status:</strong> {user ? "Authenticated" : "Not authenticated"}</p>
           </div>
           
-          <div className="mt-6 flex gap-4">
-            <Button 
-              onClick={() => window.location.reload()} 
-              variant="outline"
-            >
-              Try Again
-            </Button>
-            {!user && (
-              <Button asChild>
-                <Link href="/sign-in">Sign In</Link>
-              </Button>
-            )}
-          </div>
+          <Button 
+            onClick={() => window.location.reload()} 
+            className="mt-6"
+          >
+            Try Again
+          </Button>
         </div>
       </Container>
     );
