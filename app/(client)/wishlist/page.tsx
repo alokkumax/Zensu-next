@@ -5,7 +5,7 @@ import WishListProducts from "@/components/WishListProducts";
 import { useUser } from "@clerk/nextjs";
 
 const WishListPage = () => {
-  const { isSignedIn, user, isLoaded } = useUser();
+  const { isSignedIn, isLoaded } = useUser();
 
   if (!isLoaded) return <p>Loading...</p>;
 

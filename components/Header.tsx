@@ -15,7 +15,7 @@ import HeaderAuth from "./HeaderAuth";
 
 const Header = async () => {
   const { userId } = await auth();
-  let orders: any[] = [];
+  let orders: Array<{ _id: string; [key: string]: unknown }> = [];
 
   if (userId) {
     orders = (await getMyOrders(userId)) ?? [];

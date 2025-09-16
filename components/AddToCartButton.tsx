@@ -7,8 +7,6 @@ import useStore from "@/store";
 import toast from "react-hot-toast";
 import PriceFormatter from "./PriceFormatter";
 import QuantityButtons from "./QuantityButtons";
-import { useState } from "react";
-import { get } from "http";
 
 interface Props {
   product: Product;

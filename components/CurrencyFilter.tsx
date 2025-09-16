@@ -33,6 +33,7 @@ const CurrencyFilter: React.FC = () => {
             width={20}
             height={15}
             className="rounded-sm"
+            style={{ width: "auto", height: "auto" }}
           />
           <ChevronDown size={14} />
         </Button>

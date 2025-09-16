@@ -9,7 +9,6 @@ import { Check, Home, Package, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 
 const SuccessPage = () => {
-  const { user } = useUser();
   const { resetCart } = useStore();
   const searchParams = useSearchParams();
   const session_id = searchParams.get("session_id");

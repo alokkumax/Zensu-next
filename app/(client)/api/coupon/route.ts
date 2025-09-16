@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ valid: false, reason: "Invalid Code" }, { status: 200 });
     }
     return NextResponse.json({ valid: true, coupon });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ valid: false, reason: "Invalid Code" }, { status: 200 });
   }
 }

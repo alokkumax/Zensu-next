@@ -25,7 +25,7 @@ export default function SalesTabs() {
         const res = await fetch("/api/sales-tabs", { cache: "no-store" });
         const data = await res.json();
         setTabs(Array.isArray(data.tabs) ? data.tabs.slice(0, 5) : []);
-      } catch (e) {
+      } catch {
         setTabs([]);
       }
     };
@@ -34,12 +34,12 @@ export default function SalesTabs() {
 
   useEffect(() => {
     if (tabs.length === 0) return;
-    timerRef.current && clearInterval(timerRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       setActive((prev) => (prev + 1) % tabs.length);
     }, AUTO_INTERVAL_MS);
     return () => {
-      timerRef.current && clearInterval(timerRef.current);
+      if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [tabs]);
 

@@ -2,7 +2,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import "../globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import FooterTop from "@/components/FooterTop";
 import SalesTabs from "@/components/SalesTabs";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 

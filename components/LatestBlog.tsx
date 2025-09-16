@@ -3,9 +3,7 @@ import { getLatestBlogs } from "@/sanity/queries";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import Link from "next/link";
-import { Calendar } from "lucide-react";
-import dayjs from "dayjs";
-import { Blog, Blogcategory } from "@/sanity.types";
+import { Blog } from "@/sanity.types";
 
 const LatestBlog = async () => {
   const blogs = await getLatestBlogs();

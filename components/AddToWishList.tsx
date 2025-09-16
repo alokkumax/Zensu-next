@@ -4,10 +4,8 @@ import { Heart } from 'lucide-react';
 import React from 'react';
 
 const AddToWishList = ({
-  product,
   className,
 }:{
-  product: Product;
   className?: string;
 }) => {
   return (

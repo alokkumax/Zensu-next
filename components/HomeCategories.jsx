@@ -36,6 +36,7 @@ const HomeCategories = ({ categories }) => {
                     className="object-cover flex align-center"
                     height={400}
                     width={400}
+                    style={{ width: "auto", height: "auto" }}
                   />
                 </div>
               ) : (

@@ -14,9 +14,6 @@ import { useCurrency } from "@/contexts/CurrencyContext";
 import { getProductPriceByCurrency } from "@/lib/currencyUtils";
 // import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import {
   Tooltip,
@@ -24,15 +21,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { Address } from "@/sanity.types";
-import { client } from "@/sanity/lib/client";
 import { urlFor } from "@/sanity/lib/image";
 import useStore from "@/store";
 import { useAuth, useUser } from "@clerk/nextjs";
-import { ShoppingBag, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import toast from "react-hot-toast";
 import AddressSelection from "@/components/AddressSelection";
@@ -40,19 +35,16 @@ import AddressSelection from "@/components/AddressSelection";
 const CartPage = () => {
   const {
     deleteCartProduct,
-    getTotalPrice,
     getItemCount,
-    getSubTotalPrice,
     resetCart,
     items,
   } = useStore();
   const { currency } = useCurrency();
-  const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [couponPercent, setCouponPercent] = useState<number>(0);
   const [couponError, setCouponError] = useState<string>("");
-  const [selectedAddress, setSelectedAddress] = useState<any>(null);
+  const [selectedAddress, setSelectedAddress] = useState<{ _id: string; [key: string]: unknown } | null>(null);
   const groupedItems = useStore((state) => state.getGroupedItems());
   const { isSignedIn } = useAuth();
 
@@ -140,11 +132,9 @@ const CartPage = () => {
     }
   };
 
-  const clearCouponIfEmpty = (value: string) => {
-    if (value.trim() === "") {
-      setCouponPercent(0);
-      setCouponError("Invalid Code");
-    }
+  const clearCouponIfEmpty = () => {
+    setCouponPercent(0);
+    setCouponError("Invalid Code");
   };
   return (
     <div className="bg-white md:pb-10 md:p-16 p-7">

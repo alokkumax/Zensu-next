@@ -15,7 +15,6 @@ import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import PriceFormatter from "./PriceFormatter";
 import { Badge } from "./ui/badge";
-import { Separator } from "./ui/separator";
 import { 
   Calendar, 
   Mail, 

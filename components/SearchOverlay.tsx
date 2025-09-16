@@ -11,7 +11,7 @@ interface Product {
   slug: { current: string };
   price: number;
   discount: number;
-  images: any[];
+  images: Array<{ asset: { _ref: string }; _key: string }>;
   categories: string[];
   variant: string;
 }
@@ -204,7 +204,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
                     </div>
                   ) : (
                     <div className="text-center py-8 text-gray-500">
-                      No products found for "{searchQuery}"
+                      No products found for &quot;{searchQuery}&quot;
                     </div>
                   )}
                 </div>
@@ -236,7 +236,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose }) => {
                         onClick={handleClose}
                         className="block text-gray-600 hover:text-black py-3 px-4 border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all text-sm"
                       >
-                        Search for "{searchQuery}"
+                        Search for &quot;{searchQuery}&quot;
                       </Link>
                     )}
                   </div>

@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import ProductCard from "./ProductCard";
 import { motion, AnimatePresence } from "motion/react";
 import { client } from "@/sanity/lib/client";
 import NoProductAvailable from "./NoProductAvailable";
-import { Link, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import Container from "./Container";
 import { productTypeZ } from "@/constants/data";
 import { Product } from "@/sanity.types";
@@ -15,30 +15,46 @@ const ProductGrid = () => {
   const [loading, setLoading] = useState(false);
   const [selectedTab, setSelectedTab] = useState("All");
 
-  const query = `*[_type == "product" ${
+  const query = useMemo(() => `*[_type == "product" ${
     selectedTab.toLowerCase() === "all"
       ? "&& isFeatured == true"
       : "&& variant == $variant"
   }] | order(name asc){
     ...,"categories": categories[]->title
-  }`;
+  }`, [selectedTab]);
 
-  const params = { variant: selectedTab.toLowerCase() };
+  const params = useMemo(() => ({ variant: selectedTab.toLowerCase() }), [selectedTab]);
 
   useEffect(() => {
+    let isCancelled = false;
+    
     const fetchData = async () => {
+      // Prevent multiple simultaneous requests
+      if (loading) return;
       setLoading(true);
       try {
         const response = await client.fetch(query, params);
-        setProducts(await response);
+        if (!isCancelled) {
+          setProducts(await response);
+        }
       } catch (error) {
-        console.log("Product fetching Error", error);
+        if (!isCancelled) {
+          console.log("Product fetching Error", error);
+          setProducts([]);
+        }
       } finally {
-        setLoading(false);
+        if (!isCancelled) {
+          setLoading(false);
+        }
       }
     };
+    
     fetchData();
-  }, [selectedTab]);
+    
+    return () => {
+      isCancelled = true;
+    };
+  }, [selectedTab, params, query]);
 
   return (
     <Container className="flex flex-col lg:px-0 my-5 md:my-10">

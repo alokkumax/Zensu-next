@@ -1,8 +1,7 @@
 "use client";
 import { Category, Product } from "@/sanity.types";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import Container from "./Container";
-import Title from "./Title";
 import CategoryList from "./shop/CategoryList";
 import { useSearchParams } from "next/navigation";
 // import BrandList from "./shop/BrandList";
@@ -32,7 +31,11 @@ const Shop = ({ categories }: Props) => {
     brandParams || null
   );
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
-  const fetchProducts = async () => {
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
+  const fetchProducts = useCallback(async (signal?: AbortSignal) => {
+    // Prevent multiple simultaneous requests
+    if (loading) return;
     setLoading(true);
     try {
       // Fetch all products first, then filter by currency-specific prices
@@ -51,6 +54,9 @@ const Shop = ({ categories }: Props) => {
         { selectedCategory, selectedBrand },
         { next: { revalidate: 0 } }
       );
+
+      // Check if request was cancelled
+      if (signal?.aborted) return;
 
       // Filter products by currency-specific price if price filter is selected
       let filteredProducts = allProducts;
@@ -77,17 +83,43 @@ const Shop = ({ categories }: Props) => {
         });
       }
       
-      setProducts(filteredProducts);
+      if (!signal?.aborted) {
+        setProducts(filteredProducts);
+      }
     } catch (error) {
-      console.log("Shop product fetching Error", error);
+      if (!signal?.aborted) {
+        console.log("Shop product fetching Error", error);
+        setProducts([]);
+      }
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) {
+        setLoading(false);
+      }
     }
-  };
+  }, [selectedCategory, selectedBrand, selectedPrice, currency]);
 
   useEffect(() => {
-    fetchProducts();
-  }, [selectedCategory, selectedBrand, selectedPrice, currency]);
+    // Clear existing timeout
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+    
+    // Create AbortController for this request
+    const abortController = new AbortController();
+    
+    // Set new timeout for debounced fetch
+    debounceRef.current = setTimeout(() => {
+      fetchProducts(abortController.signal);
+    }, 300); // 300ms debounce
+
+    // Cleanup function
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+      abortController.abort();
+    };
+  }, [fetchProducts]);
   return (
     <div className="border-t md:px-20 p-2">
       <Container className="mt-5">

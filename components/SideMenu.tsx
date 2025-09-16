@@ -9,7 +9,6 @@ import SocialMedia from "./SocialMedia";
 import useOutsideClick from "@/hooks";
 import CurrencyFilter from "./CurrencyFilter";
 import useStore from "@/store";
-import { auth } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
 
 interface SidebarProps {

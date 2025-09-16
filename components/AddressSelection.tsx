@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { MapPin, Plus, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -41,9 +41,9 @@ const AddressSelection: React.FC<AddressSelectionProps> = ({
 
   useEffect(() => {
     fetchAddresses();
-  }, [userEmail]);
+  }, [userEmail, fetchAddresses]);
 
-  const fetchAddresses = async () => {
+  const fetchAddresses = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await fetch(`/api/addresses?userEmail=${encodeURIComponent(userEmail)}`);
@@ -64,7 +64,7 @@ const AddressSelection: React.FC<AddressSelectionProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [userEmail, onAddressSelect]);
 
   const handleAddressSelect = (addressId: string) => {
     const address = addresses.find(addr => addr._id === addressId);

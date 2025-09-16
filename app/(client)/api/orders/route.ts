@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getMyOrders } from "@/sanity/queries";
 import { backendClient } from "@/sanity/lib/backendClient";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
     const { userId } = await auth();
     

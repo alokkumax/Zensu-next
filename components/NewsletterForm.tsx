@@ -31,8 +31,9 @@ export default function NewsletterForm() {
       }
       toast.success("Thanks! You're subscribed.");
       form.reset();
-    } catch (err: any) {
-      toast.error(err?.message || "Something went wrong");
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong";
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

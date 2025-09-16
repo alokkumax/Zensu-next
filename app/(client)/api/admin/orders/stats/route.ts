@@ -100,7 +100,7 @@ export async function GET(req: NextRequest) {
         });
         
         return Object.values(productCounts)
-          .sort((a: any, b: any) => b.quantity - a.quantity)
+          .sort((a: { quantity: number }, b: { quantity: number }) => b.quantity - a.quantity)
           .slice(0, 10);
       }),
       

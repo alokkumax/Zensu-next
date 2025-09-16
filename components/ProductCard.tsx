@@ -3,17 +3,13 @@ import { urlFor } from "@/sanity/lib/image";
 import Image from "next/image";
 import React from "react";
 import Link from "next/link";
-import { StarIcon } from "@sanity/icons";
 import { Flame } from "lucide-react";
 import PriceView from "./PriceView";
-import Title from "./Title";
 // import AddToWishList from "./AddToWishList";
-import ProductSideMenu from "./ProductSideMenu";
 import FavoriteButton from "./FavoriteButton";
 // import AddToCartButton from "./AddToCartButton";
 
 const ProductCard = ({ product }: { product: Product }) => {
-  console.log(product.status, "HEY")
   return (
     <div className="group bg-white flex flex-col min-w-[280px] sm:min-w-0">
       <div className="relative w-full overflow-hidden">

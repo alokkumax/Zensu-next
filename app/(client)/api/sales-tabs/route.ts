@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const tabs = await getSalesTabs();
     return NextResponse.json({ tabs });
-  } catch (e) {
+  } catch {
     return NextResponse.json({ tabs: [] });
   }
 }

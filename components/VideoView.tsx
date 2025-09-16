@@ -2,7 +2,7 @@
 "use client";
 import React from "react";
 
-const VideoView = ({ videos }: { videos: any[] }) => {
+const VideoView = ({ videos }: { videos: Array<{ url: string; _key: string }> }) => {
   if (!videos?.length) return null;
 
   return (

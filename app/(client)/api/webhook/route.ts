@@ -72,7 +72,7 @@ async function createOrderInSanity(
     payment_intent,
     total_details,
   } = session;
-  const { orderNumber, customerName, customerEmail, clerkUserId, address, couponCode, couponPercent, originalTotal, discountedTotal } =
+  const { orderNumber, customerName, customerEmail, clerkUserId, address, couponCode, couponPercent, originalTotal } =
     metadata as unknown as Metadata & { address: string };
   const parsedAddress = address ? JSON.parse(address) : null;
 
