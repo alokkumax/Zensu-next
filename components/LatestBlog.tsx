@@ -3,7 +3,6 @@ import { getLatestBlogs } from "@/sanity/queries";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import Link from "next/link";
-import { Blog } from "@/sanity.types";
 
 const LatestBlog = async () => {
   const blogs = await getLatestBlogs();
@@ -21,7 +20,7 @@ const LatestBlog = async () => {
       
       {/* Blog Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {blogs?.map((blog: Blog) => (
+        {blogs?.map((blog: any) => (
           <div key={blog?._id} className="flex flex-col items-center text-center group">
             {/* Image Container */}
             <Link

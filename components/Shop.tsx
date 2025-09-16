@@ -96,7 +96,7 @@ const Shop = ({ categories }: Props) => {
         setLoading(false);
       }
     }
-  }, [selectedCategory, selectedBrand, selectedPrice, currency]);
+  }, [selectedCategory, selectedBrand, selectedPrice, currency, loading]);
 
   useEffect(() => {
     // Clear existing timeout

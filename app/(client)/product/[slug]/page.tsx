@@ -120,7 +120,7 @@ const SingleProductPage = async ({
       </Container>
       
       {/* Related Products Section */}
-      <RelatedProducts products={relatedProducts} />
+      <RelatedProducts products={relatedProducts as any} />
     </>
   );
 };

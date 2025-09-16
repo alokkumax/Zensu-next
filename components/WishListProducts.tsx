@@ -103,7 +103,22 @@ const WishListProducts = () => {
                           : "Out of Stock"}
                       </td>
                       <td className="p-2">
-                        <PriceFormatter amount={getProductPriceByCurrency(product, currency).price} />
+                        <PriceFormatter 
+                          amount={(() => {
+                            if (!product.price) return 0;
+                            const productPriceData = {
+                              price: product.price,
+                              discount: product.discount || 0,
+                              priceUAE: product.priceUAE,
+                              discountUAE: product.discountUAE,
+                              priceNPR: product.priceNPR,
+                              discountNPR: product.discountNPR,
+                            };
+                            return getProductPriceByCurrency(productPriceData, currency).price;
+                          })()} 
+                          className=""
+                          currency={currency}
+                        />
                       </td>
                       <td className="p-2">
                         <AddToCartButton product={product} className="w-full" />

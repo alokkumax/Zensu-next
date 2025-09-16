@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils';
-import { Product } from '@/sanity.types';
 import { Heart } from 'lucide-react';
 import React from 'react';
 

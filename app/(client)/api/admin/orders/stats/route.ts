@@ -84,9 +84,9 @@ export async function GET(req: NextRequest) {
         }`,
         { startDate: startDateISO }
       ).then(orders => {
-        const productCounts = {};
-        orders.forEach(order => {
-          order.products?.forEach(item => {
+        const productCounts: Record<string, { name: string; quantity: number; orders: number }> = {};
+        orders.forEach((order: { products?: Array<{ productId?: string; productName?: string; quantity?: number }> }) => {
+          order.products?.forEach((item: { productId?: string; productName?: string; quantity?: number }) => {
             if (item.productId) {
               const productId = item.productId;
               const productName = item.productName || 'Unknown Product';
@@ -112,8 +112,8 @@ export async function GET(req: NextRequest) {
         }`,
         { startDate: startDateISO }
       ).then(orders => {
-        const dailyRevenue = {};
-        orders.forEach(order => {
+        const dailyRevenue: Record<string, number> = {};
+        orders.forEach((order: { orderDate: string; orderTotals?: { total?: number } }) => {
           const date = new Date(order.orderDate).toISOString().split('T')[0];
           dailyRevenue[date] = (dailyRevenue[date] || 0) + (order.orderTotals?.total || 0);
         });
@@ -130,7 +130,7 @@ export async function GET(req: NextRequest) {
       totalRevenue: totalRevenue / 100, // Convert from cents
       averageOrderValue: totalOrders > 0 ? (totalRevenue / 100) / totalOrders : 0,
       ordersByStatus,
-      recentOrders: recentOrders.map(order => ({
+      recentOrders: recentOrders.map((order: { orderTotals?: { total?: number }; [key: string]: any }) => ({
         ...order,
         total: order.orderTotals?.total ? order.orderTotals.total / 100 : 0
       })),

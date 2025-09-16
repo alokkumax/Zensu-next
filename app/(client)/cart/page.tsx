@@ -44,21 +44,43 @@ const CartPage = () => {
   const [couponCode, setCouponCode] = useState("");
   const [couponPercent, setCouponPercent] = useState<number>(0);
   const [couponError, setCouponError] = useState<string>("");
-  const [selectedAddress, setSelectedAddress] = useState<{ _id: string; [key: string]: unknown } | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState<any>(null);
   const groupedItems = useStore((state) => state.getGroupedItems());
   const { isSignedIn } = useAuth();
 
   // Currency-aware calculation functions
   const getCurrencyAwareTotalPrice = () => {
     return items.reduce((total, item) => {
-      const { price } = getProductPriceByCurrency(item.product, currency);
+      if (!item.product.price) return total;
+      
+      const productPriceData = {
+        price: item.product.price,
+        discount: item.product.discount || 0,
+        priceUAE: item.product.priceUAE,
+        discountUAE: item.product.discountUAE,
+        priceNPR: item.product.priceNPR,
+        discountNPR: item.product.discountNPR,
+      };
+      
+      const { price } = getProductPriceByCurrency(productPriceData, currency);
       return total + price * item.quantity;
     }, 0);
   };
 
   const getCurrencyAwareSubTotalPrice = () => {
     return items.reduce((total, item) => {
-      const { price, discount } = getProductPriceByCurrency(item.product, currency);
+      if (!item.product.price) return total;
+      
+      const productPriceData = {
+        price: item.product.price,
+        discount: item.product.discount || 0,
+        priceUAE: item.product.priceUAE,
+        discountUAE: item.product.discountUAE,
+        priceNPR: item.product.priceNPR,
+        discountNPR: item.product.discountNPR,
+      };
+      
+      const { price, discount } = getProductPriceByCurrency(productPriceData, currency);
       const discountAmount = (discount * price) / 100;
       const discountedPrice = price + discountAmount;
       return total + discountedPrice * item.quantity;
@@ -126,7 +148,7 @@ const CartPage = () => {
       setCouponError("");
       setCouponPercent(Number(data.coupon?.percentOff ?? 0));
       toast.success(`Coupon applied: ${data.coupon?.percentOff}% off`);
-    } catch (e) {
+    } catch {
       setCouponPercent(0);
       setCouponError("Invalid Code");
     }
@@ -226,8 +248,20 @@ const CartPage = () => {
                           </div>
                           <div className="flex flex-col items-start justify-between h-36 md:h-44 p-0.5 md:p-1">
                             <PriceFormatter
-                              amount={getProductPriceByCurrency(product, currency).price * itemCount}
+                              amount={(() => {
+                                if (!product.price) return 0;
+                                const productPriceData = {
+                                  price: product.price,
+                                  discount: product.discount || 0,
+                                  priceUAE: product.priceUAE,
+                                  discountUAE: product.discountUAE,
+                                  priceNPR: product.priceNPR,
+                                  discountNPR: product.discountNPR,
+                                };
+                                return getProductPriceByCurrency(productPriceData, currency).price * itemCount;
+                              })()}
                               className="font-bold text-lg"
+                              currency={currency}
                             />
                             <QuantityButtons product={product} />
                           </div>
@@ -254,7 +288,8 @@ const CartPage = () => {
                           <span>SubTotal</span>
                           <PriceFormatter
                             amount={getCurrencyAwareSubTotalPrice()}
-                            className={undefined}
+                            className=""
+                            currency={currency}
                           />
                         </div>
                         <div className="space-y-2">
@@ -266,7 +301,7 @@ const CartPage = () => {
                               value={couponCode}
                               onChange={(e) => {
                                 setCouponCode(e.target.value);
-                                clearCouponIfEmpty(e.target.value);
+                                clearCouponIfEmpty();
                               }}
                               placeholder="Enter coupon code"
                               className="rounded-none"
@@ -283,6 +318,8 @@ const CartPage = () => {
                           <span>Discount</span>
                           <PriceFormatter
                             amount={(getCurrencyAwareSubTotalPrice() - getCurrencyAwareTotalPrice()) + Math.round((getCurrencyAwareTotalPrice() * couponPercent) / 100)}
+                            className=""
+                            currency={currency}
                           />
                         </div>
                         <Separator />
@@ -291,6 +328,7 @@ const CartPage = () => {
                           <PriceFormatter
                             amount={Math.max(0, getCurrencyAwareTotalPrice() - Math.round((getCurrencyAwareTotalPrice() * couponPercent) / 100))}
                             className="text-lg font-bold text-black"
+                            currency={currency}
                           />
                         </div>
                         <Button
@@ -321,7 +359,7 @@ const CartPage = () => {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <span>SubTotal</span>
-                        <PriceFormatter amount={getCurrencyAwareSubTotalPrice()} />
+                        <PriceFormatter amount={getCurrencyAwareSubTotalPrice()} className="" currency={currency} />
                       </div>
                       <div className="space-y-2">
                         <div className="flex items-center justify-between">
@@ -332,7 +370,7 @@ const CartPage = () => {
                             value={couponCode}
                             onChange={(e) => {
                               setCouponCode(e.target.value);
-                              clearCouponIfEmpty(e.target.value);
+                              clearCouponIfEmpty();
                             }}
                             placeholder="Enter coupon code"
                             className="rounded-none flex-1"
@@ -349,6 +387,8 @@ const CartPage = () => {
                         <span>Discount</span>
                         <PriceFormatter
                           amount={(getCurrencyAwareSubTotalPrice() - getCurrencyAwareTotalPrice()) + Math.round((getCurrencyAwareTotalPrice() * couponPercent) / 100)}
+                          className=""
+                          currency={currency}
                         />
                       </div>
                       <Separator />
@@ -357,6 +397,7 @@ const CartPage = () => {
                         <PriceFormatter
                           amount={Math.max(0, getCurrencyAwareTotalPrice() - Math.round((getCurrencyAwareTotalPrice() * couponPercent) / 100))}
                           className="text-lg font-bold text-black"
+                          currency={currency}
                         />
                       </div>
                       <Button

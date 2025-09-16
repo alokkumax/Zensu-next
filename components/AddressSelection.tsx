@@ -39,10 +39,6 @@ const AddressSelection: React.FC<AddressSelectionProps> = ({
   const [showForm, setShowForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
-  useEffect(() => {
-    fetchAddresses();
-  }, [userEmail, fetchAddresses]);
-
   const fetchAddresses = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -65,6 +61,10 @@ const AddressSelection: React.FC<AddressSelectionProps> = ({
       setIsLoading(false);
     }
   }, [userEmail, onAddressSelect]);
+
+  useEffect(() => {
+    fetchAddresses();
+  }, [fetchAddresses]);
 
   const handleAddressSelect = (addressId: string) => {
     const address = addresses.find(addr => addr._id === addressId);
@@ -105,7 +105,7 @@ const AddressSelection: React.FC<AddressSelectionProps> = ({
     }
   };
 
-  const handleFormSuccess = (address: Address) => {
+  const handleFormSuccess = (address: any) => {
     // Close the form first
     setShowForm(false);
     setEditingAddress(null);

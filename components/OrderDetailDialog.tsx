@@ -1,4 +1,3 @@
-import { MY_ORDERS_QUERYResult } from "@/sanity.types";
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { Button } from "./ui/button";
@@ -27,7 +26,7 @@ import {
 import { format } from "date-fns";
 
 interface OrderDetailsDialogProps {
-  order: MY_ORDERS_QUERYResult[number] | null;
+  order: any;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -172,7 +171,7 @@ const OrderDetailDialog: React.FC<OrderDetailsDialogProps> = ({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {order.products?.map((item, index) => (
+                  {order.products?.map((item: any, index: number) => (
                     <TableRow key={index} className="border-b">
                       <TableCell className="py-4">
                         <div className="flex items-start gap-3">

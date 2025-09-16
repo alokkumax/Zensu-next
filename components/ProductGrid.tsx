@@ -54,7 +54,7 @@ const ProductGrid = () => {
     return () => {
       isCancelled = true;
     };
-  }, [selectedTab, params, query]);
+  }, [selectedTab, params, query, loading]);
 
   return (
     <Container className="flex flex-col lg:px-0 my-5 md:my-10">

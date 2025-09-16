@@ -1,6 +1,5 @@
 "use client";
 
-import { MY_ORDERS_QUERYResult } from "@/sanity.types";
 import { TableBody, TableCell, TableRow } from "./ui/table";
 import {
   Tooltip,
@@ -15,10 +14,8 @@ import { useState } from "react";
 import OrderDetailDialog from "./OrderDetailDialog";
 import { Badge } from "./ui/badge";
 
-const OrdersComponent = ({ orders }: { orders: MY_ORDERS_QUERYResult }) => {
-  const [selectedOrder, setSelectedOrder] = useState<
-    MY_ORDERS_QUERYResult[number] | null
-  >(null);
+const OrdersComponent = ({ orders }: { orders: any[] }) => {
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   if (!orders || orders.length === 0) {
     return (

@@ -42,6 +42,8 @@ const AddToCartButton = ({ product, className }: Props) => {
             <span className="text-xs font-semibold">Subtotal</span>
             <PriceFormatter
               amount={product?.price ? product?.price * itemCount : 0}
+              className=""
+              currency="INR"
             />
           </div>
         </div>

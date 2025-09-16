@@ -23,7 +23,7 @@ export const salesTabType = defineType({
       type: "string",
       hidden: ({ parent }) => !parent?.isCoupon,
       validation: (rule) => rule.custom((val, ctx) => {
-        if (ctx.parent?.isCoupon && !val) return "Coupon code required when item is coupon";
+        if ((ctx.parent as any)?.isCoupon && !val) return "Coupon code required when item is coupon";
         return true;
       }),
     }),
@@ -32,7 +32,7 @@ export const salesTabType = defineType({
       title: "% Discount (optional)",
       type: "number",
       hidden: ({ parent }) => !parent?.isCoupon,
-      validation: (rule) => rule.min(1).max(100).optional(),
+      validation: (rule) => rule.min(1).max(100),
     }),
     defineField({
       name: "active",
