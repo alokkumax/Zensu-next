@@ -72,7 +72,7 @@ async function createOrderInSanity(
     payment_intent,
     total_details,
   } = session;
-  const { orderNumber, customerName, customerEmail, clerkUserId, address } =
+  const { orderNumber, customerName, customerEmail, clerkUserId, address, couponCode, couponPercent, originalTotal, discountedTotal } =
     metadata as unknown as Metadata & { address: string };
   const parsedAddress = address ? JSON.parse(address) : null;
 
@@ -97,14 +97,22 @@ async function createOrderInSanity(
         _ref: productId,
       },
       quantity,
+      price: item.price?.unit_amount ? item.price.unit_amount / 100 : 0,
     });
     stockUpdates.push({ productId, quantity });
   }
   //   Create order in Sanity
 
+  // Derive first product name for schema's required productName field
+  const firstItem = lineItemsWithProduct.data[0];
+  const firstProduct = firstItem?.price?.product as Stripe.Product | undefined;
+  const productName = firstProduct?.name || firstItem?.description || "Unknown Product";
+
   const order = await backendClient.create({
     _type: "order",
     orderNumber,
+
+    // Keep existing fields for backward compatibility
     stripeCheckoutSessionId: id,
     stripePaymentIntentId: payment_intent,
     customerName,
@@ -115,11 +123,14 @@ async function createOrderInSanity(
     amountDiscount: total_details?.amount_discount
       ? total_details.amount_discount / 100
       : 0,
-
     products: sanityProducts,
     totalPrice: amount_total ? amount_total / 100 : 0,
     status: "paid",
     orderDate: new Date().toISOString(),
+    // Add coupon information
+    couponCode: couponCode || null,
+    couponPercent: couponPercent ? Number(couponPercent) : null,
+    originalTotal: originalTotal ? Number(originalTotal) : null,
     invoice: invoice
       ? {
           id: invoice.id,
@@ -136,6 +147,31 @@ async function createOrderInSanity(
           name: parsedAddress.name,
         }
       : null,
+
+    // Add required schema fields so user appears linked in UI
+    productName,
+    selectedAddress: parsedAddress
+      ? {
+          fullName: parsedAddress.fullName || parsedAddress.name,
+          address: parsedAddress.address,
+          city: parsedAddress.city,
+          state: parsedAddress.state,
+          pinCode: parsedAddress.pinCode || parsedAddress.zip,
+        }
+      : undefined,
+    userDetails: {
+      userId: clerkUserId || "",
+      userName: customerName || "",
+      userEmail: customerEmail || "",
+    },
+    stripePaymentDetails: {
+      paymentIntentId: (payment_intent as string) || "",
+      checkoutSessionId: id,
+      amount: amount_total ? amount_total / 100 : 0,
+      currency,
+      status: "succeeded",
+    },
+    orderStatus: "processing",
   });
 
   // Update stock levels in Sanity

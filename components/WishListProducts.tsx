@@ -12,10 +12,13 @@ import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import PriceFormatter from "./PriceFormatter";
 import AddToCartButton from "./AddToCartButton";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { getProductPriceByCurrency } from "@/lib/currencyUtils";
 
 const WishListProducts = () => {
   const [visibleProducts, setVisibleProducts] = useState(7);
   const { favoriteProduct, removeFromFavorite, resetFavorite } = useStore();
+  const { currency } = useCurrency();
   const loadMore = () => {
     setVisibleProducts((prev) => Math.min(prev + 5, favoriteProduct.length));
   };
@@ -100,7 +103,7 @@ const WishListProducts = () => {
                           : "Out of Stock"}
                       </td>
                       <td className="p-2">
-                        <PriceFormatter amount={product?.price} />
+                        <PriceFormatter amount={getProductPriceByCurrency(product, currency).price} />
                       </td>
                       <td className="p-2">
                         <AddToCartButton product={product} className="w-full" />

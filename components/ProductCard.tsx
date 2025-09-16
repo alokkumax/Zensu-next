@@ -67,7 +67,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           </div>
         )}
       </div>
-      <div className="px-0 mt-2 mb-2 flex flex-col gap-1">
+      <div className="px-0 mt-1 md:mt-2 mb-1 md:mb-2 flex flex-col gap-0.5 md:gap-1">
         {product?.categories && (
           <p className="text-[#767676] italic text-sm font-poppins font-normal">
             {product.categories.map((cat) => cat._type).join(" · ")}
@@ -79,8 +79,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           </h3>
         </Link>
         <PriceView
-          price={product?.price}
-          discount={product?.discount}
+          product={product}
           className="text-base font-normal text-[#767676] text-[14px] font-poppins"
         />
         {product?.stock === 0 && (

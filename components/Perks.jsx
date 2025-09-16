@@ -32,7 +32,7 @@ const extraData = [
 const ShopByBrands =  () => {
 //   const brands = await getAllBrands();
   return (
-    <div className="mb-8 lg:mb-15 bg-shop-light-grey2 p-1 lg:p-3 rounded-md">
+    <div className="mb-4 md:mb-8 lg:mb-15 bg-shop-light-grey2 p-1 lg:p-3 rounded-md">
       {/* <div className="flex items-center gap-5 justify-between mb-10">
         <Title>Shop By Brands</Title> */}
         {/* <Link
@@ -61,20 +61,20 @@ const ShopByBrands =  () => {
           </Link>
         ))}
       </div> */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-2  hover:shadow-shop_light_green/20 py-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 p-1 md:p-2 hover:shadow-shop_light_green/20 py-3 md:py-5">
         {extraData?.map((item, index) => (
           <div
             key={index}
-            className="flex items-center gap-3 group text-lightColor hover:text-shop_light_green"
+            className="flex items-center gap-2 md:gap-3 group text-lightColor hover:text-shop_light_green"
           >
             <span className="inline-flex scale-100 group-hover:scale-90 hoverEffect">
               {item?.icon}
             </span>
-            <div className="text-sm">
+            <div className="text-sm flex-1 min-w-0">
               <p className="text-darkColor/80 font-bold capitalize">
                 {item?.title}
               </p>
-              <p className="text-lightColor">{item?.description}</p>
+              <p className="text-lightColor break-words leading-tight">{item?.description}</p>
             </div>
           </div>
         ))}

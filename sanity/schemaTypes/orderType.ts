@@ -151,6 +151,38 @@ export const orderType = defineType({
       initialValue: "pending",
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: "products",
+      title: "Products",
+      type: "array",
+      of: [
+        {
+          type: "object",
+          fields: [
+            defineField({
+              name: "product",
+              title: "Product",
+              type: "reference",
+              to: [{ type: "product" }],
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: "quantity",
+              title: "Quantity",
+              type: "number",
+              validation: (Rule) => Rule.required().min(1),
+            }),
+            defineField({
+              name: "price",
+              title: "Price Paid",
+              type: "number",
+              validation: (Rule) => Rule.required().min(0),
+              description: "The actual price paid for this item at the time of order",
+            }),
+          ],
+        },
+      ],
+    }),
   ],
   preview: {
     select: {

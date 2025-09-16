@@ -173,13 +173,13 @@ const OrderDetailDialog: React.FC<OrderDetailsDialogProps> = ({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {order.products?.map((product, index) => (
+                  {order.products?.map((item, index) => (
                     <TableRow key={index} className="border-b">
                       <TableCell className="py-4">
                         <div className="flex items-start gap-3">
-                          {product?.image && (
+                          {item?.product?.images?.[0] && (
                             <Image
-                              src={product.image}
+                              src={urlFor(item.product.images[0]).url()}
                               alt="productImage"
                               width={60}
                               height={60}
@@ -188,26 +188,28 @@ const OrderDetailDialog: React.FC<OrderDetailsDialogProps> = ({
                           )}
                           <div className="min-w-0 flex-1">
                             <div className="font-medium text-sm mb-1">
-                              {product?.productName || "Unknown Product"}
+                              {item?.product?.name || "Unknown Product"}
                             </div>
                             <div className="text-xs text-gray-500">
-                              ID: {product?.productId || "N/A"}
+                              ID: {item?.product?._id || "N/A"}
                             </div>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell className="text-center py-4">
-                        <span className="font-medium text-sm">{product?.quantity || 0}</span>
+                        <span className="font-medium text-sm">{item?.quantity || 0}</span>
                       </TableCell>
                       <TableCell className="text-right py-4">
                         <PriceFormatter
-                          amount={product?.price ? product.price / 100 : 0}
+                          amount={item?.price || 0}
+                          currency={order?.stripePaymentDetails?.currency}
                           className="text-black font-medium text-sm"
                         />
                       </TableCell>
                       <TableCell className="text-right py-4">
                         <PriceFormatter
-                          amount={product?.price && product?.quantity ? (product.price * product.quantity) / 100 : 0}
+                          amount={(item?.price || 0) * (item?.quantity || 0)}
+                          currency={order?.stripePaymentDetails?.currency}
                           className="text-black font-semibold text-sm"
                         />
                       </TableCell>
@@ -224,46 +226,52 @@ const OrderDetailDialog: React.FC<OrderDetailsDialogProps> = ({
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-600">Subtotal:</span>
                 <PriceFormatter
-                  amount={order?.orderTotals?.subtotal ? order.orderTotals.subtotal / 100 : 0}
+                  amount={order?.totalPrice || 0}
+                  currency={order?.stripePaymentDetails?.currency}
                   className="text-black font-medium"
                 />
               </div>
-              {order?.orderTotals?.discount && order.orderTotals.discount > 0 && (
+              {order?.amountDiscount && order.amountDiscount > 0 && (
                 <div className="flex items-center justify-between text-sm text-green-600">
                   <span>Discount:</span>
                   <PriceFormatter
-                    amount={-order.orderTotals.discount / 100}
+                    amount={-order.amountDiscount}
+                    currency={order?.stripePaymentDetails?.currency}
                     className="font-medium"
-                  />
-                </div>
-              )}
-              {order?.orderTotals?.shipping && order.orderTotals.shipping > 0 && (
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Shipping:</span>
-                  <PriceFormatter
-                    amount={order.orderTotals.shipping / 100}
-                    className="text-black font-medium"
-                  />
-                </div>
-              )}
-              {order?.orderTotals?.tax && order.orderTotals.tax > 0 && (
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">Tax:</span>
-                  <PriceFormatter
-                    amount={order.orderTotals.tax / 100}
-                    className="text-black font-medium"
                   />
                 </div>
               )}
               <div className="border-t pt-2">
                 <div className="flex items-center justify-between text-base font-semibold">
-                  <span>Total:</span>
+                  <span>Total Paid:</span>
                   <PriceFormatter
-                    amount={order?.orderTotals?.total ? order.orderTotals.total / 100 : 0}
+                    amount={order?.stripePaymentDetails?.amount || order?.totalPrice || 0}
+                    currency={order?.stripePaymentDetails?.currency}
                     className="text-black"
                   />
                 </div>
               </div>
+              
+              {/* Download Invoice Button */}
+              {order?.invoice?.hosted_invoice_url && (
+                <div className="border-t pt-2">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="w-full border-2 border-gray-200 hover:border-gray-400"
+                  >
+                    <Link
+                      href={order.invoice.hosted_invoice_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2"
+                    >
+                      <Download size={16} />
+                      Download Invoice
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
 

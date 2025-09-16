@@ -96,7 +96,8 @@ const OrdersComponent = ({ orders }: { orders: MY_ORDERS_QUERYResult }) => {
                   </TableCell>
                   <TableCell className="px-6 py-4">
                     <PriceFormatter
-                      amount={order?.orderTotals?.total ? order.orderTotals.total / 100 : 0}
+                      amount={order?.stripePaymentDetails?.amount || order?.totalPrice || 0}
+                      currency={order?.stripePaymentDetails?.currency}
                       className="text-black font-semibold text-sm"
                     />
                   </TableCell>

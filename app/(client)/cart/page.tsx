@@ -10,6 +10,8 @@ import NoAccess from "@/components/NoAccess";
 import PriceFormatter from "@/components/PriceFormatter";
 import ProductSideMenu from "@/components/ProductSideMenu";
 import QuantityButtons from "@/components/QuantityButtons";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { getProductPriceByCurrency } from "@/lib/currencyUtils";
 // import Title from "@/components/Title";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,7 +44,9 @@ const CartPage = () => {
     getItemCount,
     getSubTotalPrice,
     resetCart,
+    items,
   } = useStore();
+  const { currency } = useCurrency();
   const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(false);
   const [couponCode, setCouponCode] = useState("");
@@ -51,6 +55,23 @@ const CartPage = () => {
   const [selectedAddress, setSelectedAddress] = useState<any>(null);
   const groupedItems = useStore((state) => state.getGroupedItems());
   const { isSignedIn } = useAuth();
+
+  // Currency-aware calculation functions
+  const getCurrencyAwareTotalPrice = () => {
+    return items.reduce((total, item) => {
+      const { price } = getProductPriceByCurrency(item.product, currency);
+      return total + price * item.quantity;
+    }, 0);
+  };
+
+  const getCurrencyAwareSubTotalPrice = () => {
+    return items.reduce((total, item) => {
+      const { price, discount } = getProductPriceByCurrency(item.product, currency);
+      const discountAmount = (discount * price) / 100;
+      const discountedPrice = price + discountAmount;
+      return total + discountedPrice * item.quantity;
+    }, 0);
+  };
   const { user } = useUser();
 
   const handleResetCart = () => {
@@ -66,16 +87,25 @@ const CartPage = () => {
   const handleCheckout = async () => {
     setLoading(true);
     try {
+      const originalTotal = getCurrencyAwareSubTotalPrice();
+      const discountAmount = couponPercent ? Math.round((originalTotal * couponPercent) / 100) : 0;
+      const discountedTotal = originalTotal - discountAmount;
+
       const metadata: Metadata = {
         orderNumber: crypto.randomUUID(),
         customerName: user?.fullName ?? "Unknown",
         customerEmail: user?.emailAddresses[0]?.emailAddress ?? "Unknown",
         clerkUserId: user?.id,
         address: selectedAddress,
+        couponCode: couponCode || undefined,
+        couponPercent: couponPercent || undefined,
+        originalTotal: originalTotal,
+        discountedTotal: discountedTotal,
+        currency: currency,
       };
       console.log(metadata);
       console.log(groupedItems)
-      const checkoutUrl = await createCheckoutSession(groupedItems, metadata);
+      const checkoutUrl = await createCheckoutSession(groupedItems, metadata, currency);
       if (checkoutUrl) {
         window.location.href = checkoutUrl;
       }
@@ -206,7 +236,7 @@ const CartPage = () => {
                           </div>
                           <div className="flex flex-col items-start justify-between h-36 md:h-44 p-0.5 md:p-1">
                             <PriceFormatter
-                              amount={(product?.price as number) * itemCount}
+                              amount={getProductPriceByCurrency(product, currency).price * itemCount}
                               className="font-bold text-lg"
                             />
                             <QuantityButtons product={product} />
@@ -233,7 +263,7 @@ const CartPage = () => {
                         <div className="flex items-center justify-between">
                           <span>SubTotal</span>
                           <PriceFormatter
-                            amount={getSubTotalPrice()}
+                            amount={getCurrencyAwareSubTotalPrice()}
                             className={undefined}
                           />
                         </div>
@@ -262,14 +292,14 @@ const CartPage = () => {
                         <div className="flex items-center justify-between">
                           <span>Discount</span>
                           <PriceFormatter
-                            amount={(getSubTotalPrice() - getTotalPrice()) + Math.round((getSubTotalPrice() * couponPercent) / 100)}
+                            amount={(getCurrencyAwareSubTotalPrice() - getCurrencyAwareTotalPrice()) + Math.round((getCurrencyAwareTotalPrice() * couponPercent) / 100)}
                           />
                         </div>
                         <Separator />
                         <div className="flex items-center justify-between font-semibold text-lg">
                           <span>Total</span>
                           <PriceFormatter
-                            amount={Math.max(0, getTotalPrice() - Math.round((getSubTotalPrice() * couponPercent) / 100))}
+                            amount={Math.max(0, getCurrencyAwareTotalPrice() - Math.round((getCurrencyAwareTotalPrice() * couponPercent) / 100))}
                             className="text-lg font-bold text-black"
                           />
                         </div>
@@ -301,19 +331,41 @@ const CartPage = () => {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <span>SubTotal</span>
-                        <PriceFormatter amount={getSubTotalPrice()} />
+                        <PriceFormatter amount={getCurrencyAwareSubTotalPrice()} />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span>Coupon</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Input
+                            value={couponCode}
+                            onChange={(e) => {
+                              setCouponCode(e.target.value);
+                              clearCouponIfEmpty(e.target.value);
+                            }}
+                            placeholder="Enter coupon code"
+                            className="rounded-none flex-1"
+                          />
+                          <Button type="button" variant="outline" onClick={applyCoupon} className="px-3">
+                            Apply
+                          </Button>
+                        </div>
+                        {couponError && (
+                          <p className="text-sm text-red-600">{couponError}</p>
+                        )}
                       </div>
                       <div className="flex items-center justify-between">
                         <span>Discount</span>
                         <PriceFormatter
-                          amount={getSubTotalPrice() - getTotalPrice()}
+                          amount={(getCurrencyAwareSubTotalPrice() - getCurrencyAwareTotalPrice()) + Math.round((getCurrencyAwareTotalPrice() * couponPercent) / 100)}
                         />
                       </div>
                       <Separator />
                       <div className="flex items-center justify-between font-semibold text-lg">
                         <span>Total</span>
                         <PriceFormatter
-                          amount={getTotalPrice()}
+                          amount={Math.max(0, getCurrencyAwareTotalPrice() - Math.round((getCurrencyAwareTotalPrice() * couponPercent) / 100))}
                           className="text-lg font-bold text-black"
                         />
                       </div>

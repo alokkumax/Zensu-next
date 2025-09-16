@@ -47,11 +47,11 @@ const FooterTop = () => {
           className="flex items-center gap-3 group hover:bg-gray-50 p-4 transition-colors hoverEffect"
         >
           {item?.icon}
-          <div>
+          <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-gray-900 group-hover:text-black hoverEffect">
               {item?.title}
             </h3>
-            <p className="text-gray-600 text-sm mt-1 group-hover:text-gray-900 hoverEffect">
+            <p className="text-gray-600 text-sm mt-1 group-hover:text-gray-900 hoverEffect break-words leading-tight">
               {item?.subtitle}
             </p>
           </div>

@@ -6,6 +6,7 @@ import SearchBar from "./SearchBar";
 import CartIcon from "./CartIcon";
 import FavoriteButton from "./FavoriteButton";
 import MobileMenu from "./MobileMenu";
+import CurrencyFilter from "./CurrencyFilter";
 import Link from "next/link";
 import { Logs } from "lucide-react";
 import { auth } from "@clerk/nextjs/server";
@@ -21,7 +22,7 @@ const Header = async () => {
   }
 
   return (
-    <header className="px-8 sticky top-0 z-50 py-5 bg-white/70 backdrop-blur-md">
+    <header className="px-4 md:px-8 sticky top-0 z-50 py-3 md:py-5 bg-white/70 backdrop-blur-md">
       <Container className="flex items-center justify-between text-lightColor">
         {/* Left Side */}
         <div className="w-auto flex items-center justify-start gap-3 md:gap-0">
@@ -36,22 +37,31 @@ const Header = async () => {
 
         {/* Right Side */}
         <div className="w-auto md:1/3 flex items-center justify-end gap-5">
-          <FavoriteButton />
-          <CartIcon />
-          <SearchBar />
+          {/* Desktop only items */}
+          <div className="hidden md:flex items-center gap-5">
+            <CurrencyFilter />
+            <FavoriteButton />
+            <CartIcon />
+            <SearchBar />
 
-          {/* ✅ Orders badge only if logged in */}
-          {userId && (
-            <Link
-              href="/orders"
-              className="group relative hover:text-shop_light_green hoverEffect"
-            >
-              <Logs />
-              <span className="absolute -top-1 -right-1 bg-black text-black h-3.5 w-3.5 rounded-full text-xs font-semibold flex items-center justify-center">
-                {orders.length}
-              </span>
-            </Link>
-          )}
+            {/* ✅ Orders badge only if logged in */}
+            {userId && (
+              <Link
+                href="/orders"
+                className="group relative hover:text-shop_light_green hoverEffect"
+              >
+                <Logs />
+                <span className="absolute -top-1 -right-1 bg-black text-white h-3.5 w-3.5 rounded-full text-xs font-semibold flex items-center justify-center">
+                  {orders.length}
+                </span>
+              </Link>
+            )}
+          </div>
+
+          {/* Mobile only items */}
+          <div className="md:hidden flex items-center gap-3">
+            <SearchBar />
+          </div>
 
           {/* ✅ Clerk UI moved into client component */}
           <HeaderAuth />

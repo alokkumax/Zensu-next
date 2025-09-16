@@ -87,8 +87,7 @@ const RelatedProducts = ({ products, title = "WE THINK YOU'LL LOVE" }: RelatedPr
                   </h3>
                 </Link>
                 <PriceView
-                  price={product?.price}
-                  discount={product?.discount}
+                  product={product}
                   className="text-base font-normal text-[#767676] text-[14px] font-poppins"
                 />
                 {product?.stock === 0 && (

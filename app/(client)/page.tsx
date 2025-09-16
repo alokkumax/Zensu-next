@@ -14,7 +14,7 @@ const Home = async() => {
   return (
     <Container>
       <HomeBanner />
-      <div className='py-4 px-12'>
+      <div className='py-2 md:py-4 px-4 md:px-12'>
         <ProductGrid />
         <HomeCategories categories={categories} />
         <LatestBlog />

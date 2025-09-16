@@ -32,9 +32,36 @@ const MY_ORDERS_QUERY =
     productName,
     selectedAddress,
     userDetails,
-    stripePaymentDetails,
+    stripePaymentDetails{
+      amount,
+      currency,
+      status,
+      paymentIntentId,
+      checkoutSessionId
+    },
     orderDate,
-    orderStatus
+    orderStatus,
+    totalPrice,
+    amountDiscount,
+    couponCode,
+    couponPercent,
+    originalTotal,
+    invoice{
+      id,
+      number,
+      hosted_invoice_url
+    },
+    products[]{
+      _key,
+      quantity,
+      price,
+      product->{
+        _id,
+        name,
+        price,
+        images
+      }
+    }
   }`);
 const GET_ALL_BLOG = defineQuery(
   `*[_type == 'blog'] | order(publishedAt desc)[0...$quantity]{

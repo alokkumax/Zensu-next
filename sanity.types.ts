@@ -737,54 +737,8 @@ export type BRAND_QUERYResult = Array<{
   brandName: string | null;
 }>;
 // Variable: MY_ORDERS_QUERY
-// Query: *[_type == 'orders' && userDetails.userId == $userId] | order(orderDate desc){    _id,    orderNumber,    products[]{      productName,      productId,      quantity,      price,      image    },    selectedAddress,    userDetails,    stripePaymentDetails,    orderTotals,    orderDate,    orderStatus,    trackingNumber,    shippingMethod,    notes  }
-export type MY_ORDERS_QUERYResult = Array<{
-  _id: string;
-  orderNumber: string | null;
-  products: Array<{
-    productName: string | null;
-    productId: string | null;
-    quantity: number | null;
-    price: number | null;
-    image: string | null;
-  }> | null;
-  selectedAddress: {
-    fullName?: string;
-    address?: string;
-    city?: string;
-    state?: string;
-    pinCode?: string;
-    phone?: string;
-  } | null;
-  userDetails: {
-    userId?: string;
-    userName?: string;
-    userEmail?: string;
-    userPhone?: string;
-  } | null;
-  stripePaymentDetails: {
-    paymentIntentId?: string;
-    checkoutSessionId?: string;
-    amount?: number;
-    currency?: string;
-    status?: "cancelled" | "failed" | "pending" | "refunded" | "succeeded";
-    paymentMethod?: string;
-    last4?: string;
-    brand?: string;
-  } | null;
-  orderTotals: {
-    subtotal?: number;
-    discount?: number;
-    shipping?: number;
-    tax?: number;
-    total?: number;
-  } | null;
-  orderDate: string | null;
-  orderStatus: "cancelled" | "delivered" | "pending" | "processing" | "refunded" | "shipped" | null;
-  trackingNumber: string | null;
-  shippingMethod: string | null;
-  notes: string | null;
-}>;
+// Query: *[_type == 'order' && userDetails.userId == $userId] | order(orderDate desc){    _id,    orderNumber,    productName,    selectedAddress,    userDetails,    stripePaymentDetails{      amount,      currency,      status,      paymentIntentId,      checkoutSessionId    },    orderDate,    orderStatus,    totalPrice,    amountDiscount,    couponCode,    couponPercent,    originalTotal,    invoice{      id,      number,      hosted_invoice_url    },    products[]{      _key,      quantity,      price,      product->{        _id,        name,        price,        images      }    }  }
+export type MY_ORDERS_QUERYResult = Array<never>;
 // Variable: GET_ALL_BLOG
 // Query: *[_type == 'blog'] | order(publishedAt desc)[0...$quantity]{  ...,       blogcategories[]->{    title}    }
 export type GET_ALL_BLOGResult = Array<{
@@ -1088,7 +1042,7 @@ declare module "@sanity/client" {
     "*[_type == 'product' && status == 'hot'] | order(name asc){\n    ...,\"categories\": categories[]->title\n  }": DEAL_PRODUCTSResult;
     "*[_type == \"product\" && slug.current == $slug] | order(name asc) [0]": PRODUCT_BY_SLUG_QUERYResult;
     "*[_type == \"product\" && slug.current == $slug]{\n  \"brandName\": brand->title\n  }": BRAND_QUERYResult;
-    "*[_type == 'orders' && userDetails.userId == $userId] | order(orderDate desc){\n    _id,\n    orderNumber,\n    products[]{\n      productName,\n      productId,\n      quantity,\n      price,\n      image\n    },\n    selectedAddress,\n    userDetails,\n    stripePaymentDetails,\n    orderTotals,\n    orderDate,\n    orderStatus,\n    trackingNumber,\n    shippingMethod,\n    notes\n  }": MY_ORDERS_QUERYResult;
+    "*[_type == 'order' && userDetails.userId == $userId] | order(orderDate desc){\n    _id,\n    orderNumber,\n    productName,\n    selectedAddress,\n    userDetails,\n    stripePaymentDetails{\n      amount,\n      currency,\n      status,\n      paymentIntentId,\n      checkoutSessionId\n    },\n    orderDate,\n    orderStatus,\n    totalPrice,\n    amountDiscount,\n    couponCode,\n    couponPercent,\n    originalTotal,\n    invoice{\n      id,\n      number,\n      hosted_invoice_url\n    },\n    products[]{\n      _key,\n      quantity,\n      price,\n      product->{\n        _id,\n        name,\n        price,\n        images\n      }\n    }\n  }": MY_ORDERS_QUERYResult;
     "*[_type == 'blog'] | order(publishedAt desc)[0...$quantity]{\n  ...,  \n     blogcategories[]->{\n    title\n}\n    }\n  ": GET_ALL_BLOGResult;
     "*[_type == \"blog\" && slug.current == $slug][0]{\n  ..., \n    author->{\n    name,\n    image,\n  },\n  blogcategories[]->{\n    title,\n    \"slug\": slug.current,\n  },\n}": SINGLE_BLOG_QUERYResult;
     "*[_type == \"blog\"]{\n     blogcategories[]->{\n    ...\n    }\n  }": BLOG_CATEGORIESResult;

@@ -57,8 +57,7 @@ const SingleProductPage = async ({
               </div>
               <div className="space-y-2  border-gray-200 py-5">
                 <PriceView
-                  price={product?.price}
-                  discount={product?.discount}
+                  product={product}
                   className="text-lg font-bold"
                 />
                 <p

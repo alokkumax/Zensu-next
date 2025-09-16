@@ -41,10 +41,10 @@ const ProductGrid = () => {
   }, [selectedTab]);
 
   return (
-    <Container className="flex flex-col lg:px-0 my-10">
+    <Container className="flex flex-col lg:px-0 my-5 md:my-10">
       {/* ✅ Tab Bar */}
-      <div className="flex flex-col sm:flex-row sm:justify-between gap-6">
-        <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-3 md:gap-6">
+        <div className="flex flex-wrap items-center gap-2 md:gap-3">
           {productTypeZ.map((tab) => {
             const isActive = selectedTab === tab.title;
             return (
@@ -54,7 +54,7 @@ const ProductGrid = () => {
                 onClick={() =>
                   isActive ? setSelectedTab("All") : setSelectedTab(tab.title)
                 }
-                className={`cursor-pointer px-4 py-2 text-sm transition-all duration-200 ${
+                className={`cursor-pointer px-2 py-1 md:px-4 md:py-2 text-xs md:text-sm transition-all duration-200 ${
                   isActive
                     ? "bg-gray-100 text-black border border-black"
                     : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-100"
@@ -69,7 +69,7 @@ const ProductGrid = () => {
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={() => window.location.href = '/shop'}
-          className="px-4 py-2 text-sm underline rounded-md cursor-pointer border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition-all duration-200 w-fit"
+          className="px-3 py-1 md:px-4 md:py-2 text-xs md:text-sm underline rounded-md cursor-pointer border-gray-300 bg-white text-gray-700 hover:bg-gray-100 transition-all duration-200 w-fit"
           >
           See all
         </motion.button>
@@ -84,7 +84,7 @@ const ProductGrid = () => {
           </motion.div>
         </div>
       ) : products?.length ? (
-        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 md:gap-10 w-full min-[420px]:grid-cols-1">
+        <div className="mt-5 md:mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8 lg:gap-10 w-full min-[420px]:grid-cols-1">
           {products?.map((product) => (
             <AnimatePresence key={product?._id}>
               <motion.div
