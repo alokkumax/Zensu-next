@@ -69,7 +69,20 @@ export async function createCheckoutSession(
 
     // Calculate totals using currency-aware pricing
     const originalTotal = metadata.originalTotal || items.reduce((sum, item) => {
-      const { price } = getProductPriceByCurrency(item.product, currency as any);
+      // Ensure product has a price before processing
+      if (!item.product.price) return sum;
+      
+      // Create a ProductPrice object with required fields
+      const productPriceData = {
+        price: item.product.price,
+        discount: item.product.discount || 0,
+        priceUAE: item.product.priceUAE,
+        discountUAE: item.product.discountUAE,
+        priceNPR: item.product.priceNPR,
+        discountNPR: item.product.discountNPR,
+      };
+      
+      const { price } = getProductPriceByCurrency(productPriceData, currency as any);
       return sum + (price * item.quantity);
     }, 0);
     const discountAmount = metadata.couponPercent ? (originalTotal * metadata.couponPercent) / 100 : 0;
@@ -99,7 +112,22 @@ export async function createCheckoutSession(
       }/success?session_id={CHECKOUT_SESSION_ID}&orderNumber=${metadata.orderNumber}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/cart`,
       line_items: items?.map((item) => {
-        const { price } = getProductPriceByCurrency(item.product, currency as any);
+        // Ensure product has a price before processing
+        if (!item.product.price) {
+          throw new Error(`Product ${item.product.name} has no price`);
+        }
+        
+        // Create a ProductPrice object with required fields
+        const productPriceData = {
+          price: item.product.price,
+          discount: item.product.discount || 0,
+          priceUAE: item.product.priceUAE,
+          discountUAE: item.product.discountUAE,
+          priceNPR: item.product.priceNPR,
+          discountNPR: item.product.discountNPR,
+        };
+        
+        const { price } = getProductPriceByCurrency(productPriceData, currency as any);
         return {
           price_data: {
             currency: currency === 'UAE' ? 'AED' : currency, 
