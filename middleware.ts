@@ -1,6 +1,16 @@
 import { clerkMiddleware } from '@clerk/nextjs/server';
+import { NextRequest } from 'next/server';
 
-export default clerkMiddleware();
+export default clerkMiddleware((auth, req: NextRequest) => {
+  // Debug logging for production
+  console.log('🔍 Middleware Debug:', {
+    url: req.url,
+    pathname: req.nextUrl.pathname,
+    method: req.method,
+    userAgent: req.headers.get('user-agent')?.slice(0, 50) + '...',
+    timestamp: new Date().toISOString()
+  });
+});
 
 export const config = {
   matcher: [
