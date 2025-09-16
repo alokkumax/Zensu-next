@@ -11,6 +11,8 @@ import { client } from "@/sanity/lib/client";
 import { Loader2 } from "lucide-react";
 import NoProductAvailable from "./NoProductAvailable";
 import ProductCard from "./ProductCard";
+import { useCurrency } from "@/contexts/CurrencyContext";
+import { getProductPriceByCurrency } from "@/lib/currencyUtils";
 
 interface Props {
   categories: Category[];
@@ -20,6 +22,7 @@ const Shop = ({ categories }: Props) => {
   const searchParams = useSearchParams();
   const brandParams = searchParams?.get("brand");
   const categoryParams = searchParams?.get("category");
+  const { currency } = useCurrency();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
@@ -32,29 +35,49 @@ const Shop = ({ categories }: Props) => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      let minPrice = 0;
-      let maxPrice = 10000;
-      if (selectedPrice) {
-        const [min, max] = selectedPrice.split("-").map(Number);
-        minPrice = min;
-        maxPrice = max;
-      }
+      // Fetch all products first, then filter by currency-specific prices
       const query = `
       *[_type == 'product' 
         && (!defined($selectedCategory) || references(*[_type == "category" && slug.current == $selectedCategory]._id))
         && (!defined($selectedBrand) || references(*[_type == "brand" && slug.current == $selectedBrand]._id))
-        && price >= $minPrice && price <= $maxPrice
       ] 
       | order(name asc) {
         ...,"categories": categories[]->title
       }
     `;
-      const data = await client.fetch(
+      
+      const allProducts = await client.fetch(
         query,
-        { selectedCategory, selectedBrand, minPrice, maxPrice },
+        { selectedCategory, selectedBrand },
         { next: { revalidate: 0 } }
       );
-      setProducts(data);
+
+      // Filter products by currency-specific price if price filter is selected
+      let filteredProducts = allProducts;
+      
+      if (selectedPrice) {
+        const [minPrice, maxPrice] = selectedPrice.split("-").map(Number);
+        
+        filteredProducts = allProducts.filter((product: Product) => {
+          // Ensure product has a price before filtering
+          if (!product.price) return false;
+          
+          // Create a ProductPrice object with required fields
+          const productPriceData = {
+            price: product.price,
+            discount: product.discount || 0,
+            priceUAE: product.priceUAE,
+            discountUAE: product.discountUAE,
+            priceNPR: product.priceNPR,
+            discountNPR: product.discountNPR,
+          };
+          
+          const productPrice = getProductPriceByCurrency(productPriceData, currency);
+          return productPrice.price >= minPrice && productPrice.price <= maxPrice;
+        });
+      }
+      
+      setProducts(filteredProducts);
     } catch (error) {
       console.log("Shop product fetching Error", error);
     } finally {
@@ -64,7 +87,7 @@ const Shop = ({ categories }: Props) => {
 
   useEffect(() => {
     fetchProducts();
-  }, [selectedCategory, selectedBrand, selectedPrice]);
+  }, [selectedCategory, selectedBrand, selectedPrice, currency]);
   return (
     <div className="border-t md:px-20 p-2">
       <Container className="mt-5">

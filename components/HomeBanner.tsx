@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import Container from './Container';
 
 const bannerData = [
@@ -8,14 +9,14 @@ const bannerData = [
     image: "/hero2.jpg",
     category: "Suitcases",
     title: "LV Dimension Monogram",
-    href: "/suitcases"
+    href: "/shop"
   },
-  {
-    image: "/hero.jpg",
-    category: "Handbags",
-    title: "LV Dimension Monogram",
-    href: "/handbags"
-  },
+  // {
+  //   image: "/hero.jpg",
+  //   category: "Handbags",
+  //   title: "LV Dimension Monogram",
+  //   href: "/handbags"
+  // },
 //   {    image: "/hero3.jpg",
 //     category: "Accessories",
 //     title: "LV Dimension Monogram",
@@ -38,26 +39,27 @@ const HomeBanner = () => {
     <div className="relative w-full h-[400px] md:h-[700px]">
       {/* Hero Images */}
       {bannerData.map((banner, index) => (
-        <div
+        <Link
+          href={banner.href}
           key={index}
-          className={`absolute inset-0 w-full h-full transition-opacity duration-1000
+          className={`absolute inset-0 w-full h-full transition-opacity duration-1000 cursor-pointer
             ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
         >
           <Image
             src={banner.image}
             alt={`Banner ${index + 1}`}
             fill
-            className="object-cover w-full"
+            className="object-cover object-top w-full"
             priority={index === 0}
           />
-        </div>
+        </Link>
       ))}
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+      {/* <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" /> */}
 
       {/* Content */}
-      <div className="relative h-full flex items-end pb-10">
+      {/* <div className="relative h-full flex items-end pb-10">
         <Container>
           <div className="flex flex-col items-center text-white text-center">
             <span className="text-lg md:text-xs italic uppercase tracking-widest mb-4 font-light">
@@ -68,7 +70,7 @@ const HomeBanner = () => {
             </h2>
           </div>
         </Container>
-      </div>
+      </div> */}
 
       {/* Slide Indicators */}
       {/* <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
