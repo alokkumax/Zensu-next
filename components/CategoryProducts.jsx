@@ -33,9 +33,23 @@ const CategoryProducts = ({ categories, slug }) => {
     try {
       const query = `
         *[_type == 'product' && references(*[_type == "category" && slug.current == $categorySlug]._id)] | order(name asc){
-        ...,"categories": categories[]->title}
+        _id,
+        name,
+        slug,
+        price,
+        discount,
+        priceUAE,
+        discountUAE,
+        priceNPR,
+        discountNPR,
+        images,
+        stock,
+        status,
+        "categories": categories[]->title}
       `;
-      const data = await client.fetch(query, { categorySlug });
+      const data = await client.fetch(query, { categorySlug }, { 
+        next: { revalidate: 60 } 
+      });
       setProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);

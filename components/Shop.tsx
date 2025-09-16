@@ -23,7 +23,7 @@ const Shop = ({ categories }: Props) => {
   const categoryParams = searchParams?.get("category");
   const { currency } = useCurrency();
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start with loading true for initial load
   const [selectedCategory, setSelectedCategory] = useState<string | null>(
     categoryParams || null
   );
@@ -34,25 +34,36 @@ const Shop = ({ categories }: Props) => {
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchProducts = useCallback(async (signal?: AbortSignal) => {
-    // Prevent multiple simultaneous requests
-    if (loading) return;
     setLoading(true);
     try {
-      // Fetch all products first, then filter by currency-specific prices
+      // Optimized query with better filtering
       const query = `
       *[_type == 'product' 
         && (!defined($selectedCategory) || references(*[_type == "category" && slug.current == $selectedCategory]._id))
         && (!defined($selectedBrand) || references(*[_type == "brand" && slug.current == $selectedBrand]._id))
+        && defined(price)
       ] 
       | order(name asc) {
-        ...,"categories": categories[]->title
+        _id,
+        name,
+        slug,
+        price,
+        discount,
+        priceUAE,
+        discountUAE,
+        priceNPR,
+        discountNPR,
+        images,
+        stock,
+        status,
+        "categories": categories[]->title
       }
     `;
       
       const allProducts = await client.fetch(
         query,
         { selectedCategory, selectedBrand },
-        { next: { revalidate: 0 } }
+        { next: { revalidate: 60 } } // Cache for 1 minute
       );
 
       // Check if request was cancelled
@@ -65,7 +76,6 @@ const Shop = ({ categories }: Props) => {
         const [minPrice, maxPrice] = selectedPrice.split("-").map(Number);
         
         filteredProducts = allProducts.filter((product: Product) => {
-          // Ensure product has a price before filtering
           if (!product.price) return false;
           
           // Create a ProductPrice object with required fields
@@ -96,8 +106,14 @@ const Shop = ({ categories }: Props) => {
         setLoading(false);
       }
     }
-  }, [selectedCategory, selectedBrand, selectedPrice, currency, loading]);
+  }, [selectedCategory, selectedBrand, selectedPrice, currency]);
 
+  // Initial load effect
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  // Filter change effect with debouncing
   useEffect(() => {
     // Clear existing timeout
     if (debounceRef.current) {
@@ -110,7 +126,7 @@ const Shop = ({ categories }: Props) => {
     // Set new timeout for debounced fetch
     debounceRef.current = setTimeout(() => {
       fetchProducts(abortController.signal);
-    }, 300); // 300ms debounce
+    }, 150); // Reduced to 150ms for faster response
 
     // Cleanup function
     return () => {

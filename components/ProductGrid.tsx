@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import ProductCard from "./ProductCard";
 import { motion, AnimatePresence } from "motion/react";
 import { client } from "@/sanity/lib/client";
@@ -12,49 +12,54 @@ import { Product } from "@/sanity.types";
 
 const ProductGrid = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start with loading true
   const [selectedTab, setSelectedTab] = useState("All");
 
-  const query = useMemo(() => `*[_type == "product" ${
-    selectedTab.toLowerCase() === "all"
-      ? "&& isFeatured == true"
-      : "&& variant == $variant"
-  }] | order(name asc){
-    ...,"categories": categories[]->title
-  }`, [selectedTab]);
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      // Optimized query with specific fields only
+      const query = `*[_type == "product" ${
+        selectedTab.toLowerCase() === "all"
+          ? "&& isFeatured == true"
+          : "&& variant == $variant"
+      }] | order(name asc){
+        _id,
+        name,
+        slug,
+        price,
+        discount,
+        priceUAE,
+        discountUAE,
+        priceNPR,
+        discountNPR,
+        images,
+        stock,
+        status,
+        variant,
+        isFeatured,
+        "categories": categories[]->title
+      }`;
+      
+      const params = { variant: selectedTab.toLowerCase() };
+      
+      const response = await client.fetch(query, params, { 
+        next: { revalidate: 60 } // Cache for 1 minute
+      });
+      
+      setProducts(response);
+    } catch (error) {
+      console.log("Product fetching Error", error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedTab]);
 
-  const params = useMemo(() => ({ variant: selectedTab.toLowerCase() }), [selectedTab]);
-
+  // Initial load effect
   useEffect(() => {
-    let isCancelled = false;
-    
-    const fetchData = async () => {
-      // Prevent multiple simultaneous requests
-      if (loading) return;
-      setLoading(true);
-      try {
-        const response = await client.fetch(query, params);
-        if (!isCancelled) {
-          setProducts(await response);
-        }
-      } catch (error) {
-        if (!isCancelled) {
-          console.log("Product fetching Error", error);
-          setProducts([]);
-        }
-      } finally {
-        if (!isCancelled) {
-          setLoading(false);
-        }
-      }
-    };
-    
     fetchData();
-    
-    return () => {
-      isCancelled = true;
-    };
-  }, [selectedTab, params, query, loading]);
+  }, [fetchData]);
 
   return (
     <Container className="flex flex-col lg:px-0 my-5 md:my-10">

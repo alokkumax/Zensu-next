@@ -18,21 +18,22 @@ const ProductCard = ({ product }: { product: Product }) => {
             <div className="relative w-full h-[600px]">
               {/* First Image */}
               <Image
-                src={urlFor(product.images[0]).url()}
+                src={urlFor(product.images[0]).width(400).height(400).quality(80).url()}
                 alt={product?.name || "Product Image"}
                 width={400}
                 height={400}
-                priority
+                loading="lazy"
                 className={`w-full h-full object-cover transition-opacity duration-500
                 group-hover:opacity-0 ${product?.stock === 0 ? "opacity-50" : "opacity-100"}`}
               />
               {/* Second Image (shows on hover) */}
               {product.images.length > 1 && (
                 <Image
-                  src={urlFor(product.images[1]).url()}
+                  src={urlFor(product.images[1]).width(400).height(400).quality(80).url()}
                   alt={product?.name || "Product Image"}
                   width={400}
                   height={400}
+                  loading="lazy"
                   className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-0 
                   group-hover:opacity-100 ${product?.stock === 0 ? "opacity-50" : ""}`}
                 />
