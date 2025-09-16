@@ -4,11 +4,12 @@ import { backendClient } from '@/sanity/lib/backendClient';
 // PUT - Update address
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const body = await request.json();
     const { userEmail, name, fullName, address, road, pinCode, country, state, city, phoneNumber } = body;
+    const { id } = await params;
 
     console.log('Received update address data:', body);
 
@@ -19,7 +20,7 @@ export async function PUT(
 
     // Update address
     const updatedAddress = await backendClient
-      .patch(params.id)
+      .patch(id)
       .set({
         userEmail,
         name,
@@ -45,10 +46,11 @@ export async function PUT(
 // DELETE - Delete address
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await backendClient.delete(params.id);
+    const { id } = await params;
+    await backendClient.delete(id);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error deleting address:', error);
