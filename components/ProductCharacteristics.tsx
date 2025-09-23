@@ -13,7 +13,7 @@ const ProductCharacteristics = async ({
 }: {
   product: Product | null | undefined;
 }) => {
-  const brand = await getBrand(product?.slug?.current as string);
+  // const brand = await getBrand(product?.slug?.current as string);
 
   return (
     <Accordion type="single" collapsible className="w-full">

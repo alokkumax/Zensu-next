@@ -14,7 +14,7 @@ const ProductGrid = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true); // Start with loading true
   const [selectedTab, setSelectedTab] = useState("All");
-  const [currentIndex, setCurrentIndex] = useState(0);
+  // const [currentIndex, setCurrentIndex] = useState(0);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const fetchData = useCallback(async () => {
@@ -97,7 +97,7 @@ const ProductGrid = () => {
       {/* ✅ Section Heading */}
       <div className="mb-6">
         <h2 className="text-2xl md:text-3xl font-light text-center font-poppins mb-2">
-          What's Trending
+          What&apos;s Trending
         </h2>
       </div>
       

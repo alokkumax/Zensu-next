@@ -7,13 +7,9 @@ import ProductCharacteristics from "@/components/ProductCharacteristics";
 import RelatedProducts from "@/components/RelatedProducts";
 // import VideoView from "@/components/VideoView";
 import { getProductBySlug, getRelatedProducts } from "@/sanity/queries";
-import { CornerDownLeft, StarIcon, Truck } from "lucide-react";
+import { StarIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 import React from "react";
-import { FaRegQuestionCircle } from "react-icons/fa";
-import { FiShare2 } from "react-icons/fi";
-import { RxBorderSplit } from "react-icons/rx";
-import { TbTruckDelivery } from "react-icons/tb";
 
 const SingleProductPage = async ({
   params,
