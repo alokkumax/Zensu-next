@@ -11,7 +11,7 @@ interface LatestBlogProps {
 }
 
 const LatestBlog = ({ blogs }: LatestBlogProps) => {
-  const scrollContainerRef = useRef(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Carousel navigation functions with snappy scroll
   const scrollToNext = () => {
