@@ -102,7 +102,8 @@ const ProductGrid = () => {
       </div>
       
       {/* ✅ Tab Bar */}
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 md:gap-3">
+        {/* Categories */}
         <div className="flex flex-wrap items-center gap-2 md:gap-3">
           {productTypeZ.map((tab) => {
             const isActive = selectedTab === tab.title;
@@ -125,10 +126,11 @@ const ProductGrid = () => {
           })}
         </div>
 
+        {/* See all button - right aligned */}
         <motion.button
           whileTap={{ scale: 0.95 }}
           onClick={() => window.location.href = '/shop'}
-          className="px-4 py-2 text-sm text-blue-600 hover:text-blue-800 transition-colors duration-200"
+          className="px-4 py-2 text-sm text-blue-600 hover:text-blue-800 transition-colors duration-200 flex-shrink-0"
           >
           See all
         </motion.button>
