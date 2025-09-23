@@ -11,9 +11,9 @@ interface MobileFilterModalProps {
   onClose: () => void;
   categories: Category[];
   selectedCategory: string | null;
-  setSelectedCategory: (category: string | null) => void;
+  setSelectedCategory: React.Dispatch<React.SetStateAction<string | null>>;
   selectedPrice: string | null;
-  setSelectedPrice: (price: string | null) => void;
+  setSelectedPrice: React.Dispatch<React.SetStateAction<string | null>>;
   onResetFilters: () => void;
   productCount: number;
 }
