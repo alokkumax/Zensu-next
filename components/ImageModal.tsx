@@ -4,12 +4,10 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
 import { urlFor } from "@/sanity/lib/image";
-import { SanityImage } from "@/sanity.types";
-
 interface ImageModalProps {
   isOpen: boolean;
   onClose: () => void;
-  image: SanityImage | null;
+  image: any;
   alt: string;
 }
 
