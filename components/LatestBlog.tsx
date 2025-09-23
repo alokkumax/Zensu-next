@@ -6,15 +6,8 @@ import { urlFor } from "@/sanity/lib/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-interface Blog {
-  _id: string;
-  title: string;
-  slug: { current: string };
-  mainImage?: any;
-}
-
 interface LatestBlogProps {
-  blogs: Blog[];
+  blogs: any[];
 }
 
 const LatestBlog = ({ blogs }: LatestBlogProps) => {
@@ -59,7 +52,7 @@ const LatestBlog = ({ blogs }: LatestBlogProps) => {
       <div className="relative">
         {/* Desktop: Centered Grid */}
         <div className="hidden md:grid md:grid-cols-3 gap-8 justify-center">
-          {blogs?.map((blog: Blog) => (
+          {blogs?.map((blog: any) => (
             <div key={blog?._id} className="flex flex-col items-center text-center group">
               {/* Image Container */}
               <Link
@@ -100,7 +93,7 @@ const LatestBlog = ({ blogs }: LatestBlogProps) => {
             className="flex gap-4 overflow-x-auto scrollbar-hide mobile-horizontal-scroll pb-4"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {blogs?.map((blog: Blog) => (
+            {blogs?.map((blog: any) => (
               <div key={blog?._id} className="flex-shrink-0 w-80">
                 <div className="flex flex-col items-center text-center group">
                   {/* Image Container */}
