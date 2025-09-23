@@ -7,15 +7,15 @@ import { Flame } from "lucide-react";
 import PriceView from "./PriceView";
 // import AddToWishList from "./AddToWishList";
 import FavoriteButton from "./FavoriteButton";
-// import AddToCartButton from "./AddToCartButton";
+import AddToCartButton from "./AddToCartButton";
 
 const ProductCard = ({ product }: { product: Product }) => {
   return (
-    <div className="group bg-white flex flex-col min-w-[280px] sm:min-w-0">
+    <div className="group bg-white flex flex-col">
       <div className="relative w-full overflow-hidden">
         {product?.images && product.images.length > 0 && (
           <Link href={`/product/${product?.slug?.current}`}>
-            <div className="relative w-full h-[600px]">
+            <div className="relative w-full h-[280px] sm:h-[320px] md:h-[360px] lg:h-[400px]">
               {/* First Image */}
               <Image
                 src={urlFor(product.images[0]).width(400).height(400).quality(80).url()}
@@ -64,24 +64,27 @@ const ProductCard = ({ product }: { product: Product }) => {
           </div>
         )}
       </div>
-      <div className="px-0 mt-1 md:mt-2 mb-1 md:mb-2 flex flex-col gap-0.5 md:gap-1">
+      <div className="pt-4 pr-4 pb-4 pl-0 flex flex-col gap-2">
         {product?.categories && (
-          <p className="text-[#767676] italic text-sm font-poppins font-normal">
+          <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">
             {product.categories.map((cat) => cat._type).join(" · ")}
           </p>
         )}
         <Link href={`/product/${product?.slug?.current}`}>
-          <h3 className="text-[16px] font-medium line-clamp-1 transition-colors font-poppins">
+          <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 hover:text-gray-700 transition-colors">
             {product?.name || "Product Name"}
           </h3>
         </Link>
         <PriceView
           product={product}
-          className="text-base font-normal text-[#767676] text-[14px] font-poppins"
+          className="text-sm font-semibold text-gray-900"
         />
         {product?.stock === 0 && (
-          <p className="text-red-500 text-sm font-medium font-poppins">Out of Stock</p>
+          <p className="text-red-500 text-xs font-medium">Out of Stock</p>
         )}
+        <div className="mt-2">
+          <AddToCartButton product={product} />
+        </div>
       </div>
     </div>
   );

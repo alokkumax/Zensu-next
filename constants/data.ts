@@ -17,18 +17,15 @@ export const categoriesData = [
  { title: "Handbags", href: "handbags" },
   { title: "Suitcases", href: "suitcases" },
   { title: "Bagpacks", href: "bagpacks" },
-  { title: "Others", href: "others" },
 ];
 export const productType = [
   { title: "All", value: "all" },
   { title: "Gadget", value: "gadget" },
   { title: "Appliances", value: "appliances" },
   { title: "Refrigerators", value: "refrigerators" },
-  { title: "Others", value: "others" },
 ];
 export const productTypeZ = [
   { title: "Handbags", value: "handbags" },
   { title: "Suitcases", value: "suitcases" },
   { title: "Bagpacks", value: "bagpacks" },
-  { title: "Others", value: "others" },
 ];

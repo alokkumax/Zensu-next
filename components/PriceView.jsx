@@ -45,7 +45,7 @@ const PriceView = ({ product, className }) => {
           <PriceFormatter
             amount={price + (discount * price) / 100}
             className={twMerge(
-              "line-through text-xs font-normal text-zinc-500 font-poppins",
+              "line-through text-xs font-normal text-gray-400 font-poppins",
               className
             )}
             currency={currency}

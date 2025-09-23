@@ -1,87 +1,47 @@
-"use client";
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 const bannerData = [
   {
-    image: "/hero2.jpg",
-    category: "Suitcases",
-    title: "LV Dimension Monogram",
+    image: "/hero2.png",
+    title: "YOUR FALL EDIT",
+    subtitle: "A curated capsule for the season of reset.",
+    buttonText: "SHOP NOW",
     href: "/shop"
-  },
-  // {
-  //   image: "/hero.jpg",
-  //   category: "Handbags",
-  //   title: "LV Dimension Monogram",
-  //   href: "/handbags"
-  // },
-//   {    image: "/hero3.jpg",
-//     category: "Accessories",
-//     title: "LV Dimension Monogram",
-//     href: "/accessories"
-//   }
+  }
 ];
 
 const HomeBanner = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % bannerData.length);
-    }, 5000); // Change slide every 5 seconds
-
-    return () => clearInterval(timer);
-  }, []);
-
   return (
-    <div className="relative w-full h-[400px] md:h-[700px]">
-      {/* Hero Images */}
-      {bannerData.map((banner, index) => (
-        <Link
-          href={banner.href}
-          key={index}
-          className={`absolute inset-0 w-full h-full transition-opacity duration-1000 cursor-pointer
-            ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}
-        >
-          <Image
-            src={banner.image}
-            alt={`Banner ${index + 1}`}
-            fill
-            className="object-cover object-top w-full"
-            priority={index === 0}
-          />
-        </Link>
-      ))}
-
-      {/* Gradient Overlay */}
-      {/* <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" /> */}
-
-      {/* Content */}
-      {/* <div className="relative h-full flex items-end pb-10">
-        <Container>
-          <div className="flex flex-col items-center text-white text-center">
-            <span className="text-lg md:text-xs italic uppercase tracking-widest mb-4 font-light">
-              {bannerData[currentSlide].category}
-            </span>
-            <h2 className="text-3xl md:text-2xl font-bold font-poppins mb-4">
-              {bannerData[currentSlide].title}
-            </h2>
-          </div>
-        </Container>
-      </div> */}
-
-      {/* Slide Indicators */}
-      {/* <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-        {bannerData.map((_, index) => (
-          <button
-            key={index}
-            className={`w-2 h-2 rounded-full transition-colors duration-300
-              ${index === currentSlide ? 'bg-white' : 'bg-white/50'}`}
-            onClick={() => setCurrentSlide(index)}
-          />
-        ))}
-      </div> */}
+    <div className="relative w-full overflow-hidden min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:min-h-[700px]">
+      {/* Hero Image */}
+      <Image
+        src={bannerData[0].image}
+        alt="Hero Banner"
+        fill
+        priority
+        className="object-cover object-center scale-110"
+        sizes="100vw"
+      />
+      
+      {/* Content Overlay */}
+      <div className="absolute inset-0 flex items-end pb-8 pl-6 pr-6">
+        <div className="text-white">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2">
+            {bannerData[0].title}
+          </h1>
+          <p className="text-sm sm:text-base md:text-lg mb-4 max-w-md">
+            {bannerData[0].subtitle}
+          </p>
+          <Link
+            href={bannerData[0].href}
+            className="inline-block px-6 py-3 bg-white text-black font-semibold text-sm sm:text-base hover:bg-gray-100 transition-colors cursor-pointer"
+          >
+            {bannerData[0].buttonText}
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };

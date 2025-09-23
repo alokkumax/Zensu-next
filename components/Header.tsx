@@ -22,7 +22,7 @@ const Header = async () => {
   }
 
   return (
-    <header className="px-4 md:px-8 sticky top-0 z-50 py-3 md:py-5 bg-white/70 backdrop-blur-md">
+    <header className="px-4 sm:px-6 md:px-8 sticky top-0 z-50 py-3 sm:py-4 md:py-5 bg-white/70 backdrop-blur-md">
       <Container className="flex items-center justify-between text-lightColor">
         {/* Left Side */}
         <div className="w-auto flex items-center justify-start gap-3 md:gap-0">

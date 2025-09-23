@@ -63,26 +63,31 @@ const CategoryProducts = ({ categories, slug }) => {
   }, [currentSlug]);
 
   return (
-    <div className="py-5 flex flex-col md:flex-row items-start gap-5">
-      <div className="w-full md:w-60">
-        <Select value={currentSlug} onValueChange={handleCategoryChange}>
-          <SelectTrigger className="w-full border-gray-200 focus:ring-0 focus:ring-offset-0">
-            <SelectValue placeholder="Select a category" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories?.map((item) => (
-              <SelectItem
-                key={item?._id}
-                value={item?.slug?.current}
-                className="capitalize"
-              >
-                {item?.title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+    <div className="w-full">
+      {/* Category Selector - Top Left */}
+      <div className="flex justify-start mb-6">
+        <div className="w-full max-w-xs">
+          <Select value={currentSlug} onValueChange={handleCategoryChange}>
+            <SelectTrigger className="w-full border-gray-200 focus:ring-0 focus:ring-offset-0">
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories?.map((item) => (
+                <SelectItem
+                  key={item?._id}
+                  value={item?.slug?.current}
+                  className="capitalize"
+                >
+                  {item?.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-      <div className="flex-1">
+
+      {/* Products Grid */}
+      <div className="w-full">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-10 min-h-80 space-y-4 text-center bg-gray-100 rounded-lg w-full">
             <div className="flex items-center space-x-2 text-red-500">
@@ -91,7 +96,7 @@ const CategoryProducts = ({ categories, slug }) => {
             </div>
           </div>
         ) : products?.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
             {products?.map((product) => (
               <AnimatePresence key={product._id}>
                 <motion.div>

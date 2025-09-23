@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import { SanityImageCrop, SanityImageHotspot, internalGroqTypeReferenceTo } from "@/sanity.types";
 import { dataset, projectId } from "@/sanity/env";
+import ImageModal from "./ImageModal";
 
 type SanityImage = {
   asset?: {
@@ -50,6 +51,8 @@ export default function ProductMediaGallery({
   videos?: SanityVideo[];
   isStock?: number | undefined;
 }) {
+  const [selectedImage, setSelectedImage] = useState<SanityImage | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   // Build media list with priority: first image + first video at top row, then alternate remaining
   const media = useMemo(() => {
     const result: Array<
@@ -83,6 +86,16 @@ export default function ProductMediaGallery({
 
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
+  const handleImageClick = (image: SanityImage) => {
+    setSelectedImage(image);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedImage(null);
+  };
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -108,53 +121,123 @@ export default function ProductMediaGallery({
   if (!media.length) return null;
 
   return (
-    <div className="w-full md:w-1/2">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
-        {media.map((item) => {
-          if (item.kind === "image") {
-            return (
-              <div key={item.key} className="w-full overflow-hidden bg-white">
-                <Image
-                  src={urlFor(item.data as SanityImage).url()}
-                  alt="product media"
-                  width={1000}
-                  height={1200}
-                  loading="lazy"
-                  className={`w-full h-full object-cover aspect-[3/4] ${
-                    isStock === 0 ? "opacity-50" : ""
-                  }`}
-                />
-              </div>
-            );
-          }
-          const uploadedUrl = fileRefToUrl((item.data as SanityVideo).upload?.asset);
-          const externalUrl = (item.data as SanityVideo).url;
-          return (
-            <div key={item.key} className="w-full overflow-hidden bg-white">
-              {uploadedUrl ? (
-                <video
-                  ref={(el) => { videoRefs.current[item.key] = el; }}
-                  src={uploadedUrl}
-                  muted
-                  playsInline
-                  controls
-                  loop
-                  className="w-full h-full object-cover aspect-[3/4]"
-                />
-              ) : externalUrl ? (
-                <div className="relative w-full">
-                  <iframe
-                    src={externalUrl}
-                    className="w-full h-full aspect-[3/4]"
-                    allow="autoplay; encrypted-media"
-                    allowFullScreen
-                  />
+    <>
+      <div className="w-full md:w-1/2">
+        {/* Mobile: Horizontal scrollable gallery */}
+        <div className="md:hidden mobile-scroll-indicator">
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide mobile-horizontal-scroll pb-2" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            {media.map((item) => {
+              if (item.kind === "image") {
+                return (
+                  <div 
+                    key={item.key} 
+                    className="flex-shrink-0 w-80 h-96 overflow-hidden bg-white rounded-lg cursor-pointer hover:shadow-lg transition-shadow duration-300"
+                    onClick={() => handleImageClick(item.data as SanityImage)}
+                  >
+                    <Image
+                      src={urlFor(item.data as SanityImage).url()}
+                      alt="product media"
+                      width={320}
+                      height={384}
+                      loading="lazy"
+                      className={`w-full h-full object-cover ${
+                        isStock === 0 ? "opacity-50" : ""
+                      }`}
+                    />
+                  </div>
+                );
+              }
+              const uploadedUrl = fileRefToUrl((item.data as SanityVideo).upload?.asset);
+              const externalUrl = (item.data as SanityVideo).url;
+              return (
+                <div key={item.key} className="flex-shrink-0 w-80 h-96 overflow-hidden bg-white rounded-lg">
+                  {uploadedUrl ? (
+                    <video
+                      ref={(el) => { videoRefs.current[item.key] = el; }}
+                      src={uploadedUrl}
+                      muted
+                      playsInline
+                      controls
+                      loop
+                      className="w-full h-full object-cover"
+                    />
+                  ) : externalUrl ? (
+                    <div className="relative w-full h-full">
+                      <iframe
+                        src={externalUrl}
+                        className="w-full h-full"
+                        allow="autoplay; encrypted-media"
+                        allowFullScreen
+                      />
+                    </div>
+                  ) : null}
                 </div>
-              ) : null}
-            </div>
-          );
-        })}
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Desktop: Grid layout */}
+        <div className="hidden md:block">
+          <div className="grid grid-cols-2 gap-4">
+            {media.map((item) => {
+              if (item.kind === "image") {
+                return (
+                  <div 
+                    key={item.key} 
+                    className="w-full overflow-hidden bg-white rounded-lg cursor-pointer hover:shadow-lg transition-shadow duration-300"
+                    onClick={() => handleImageClick(item.data as SanityImage)}
+                  >
+                    <Image
+                      src={urlFor(item.data as SanityImage).url()}
+                      alt="product media"
+                      width={1000}
+                      height={1200}
+                      loading="lazy"
+                      className={`w-full h-full object-cover aspect-[3/4] ${
+                        isStock === 0 ? "opacity-50" : ""
+                      }`}
+                    />
+                  </div>
+                );
+              }
+              const uploadedUrl = fileRefToUrl((item.data as SanityVideo).upload?.asset);
+              const externalUrl = (item.data as SanityVideo).url;
+              return (
+                <div key={item.key} className="w-full overflow-hidden bg-white rounded-lg">
+                  {uploadedUrl ? (
+                    <video
+                      ref={(el) => { videoRefs.current[item.key] = el; }}
+                      src={uploadedUrl}
+                      muted
+                      playsInline
+                      controls
+                      loop
+                      className="w-full h-full object-cover aspect-[3/4]"
+                    />
+                  ) : externalUrl ? (
+                    <div className="relative w-full">
+                      <iframe
+                        src={externalUrl}
+                        className="w-full h-full aspect-[3/4]"
+                        allow="autoplay; encrypted-media"
+                        allowFullScreen
+                      />
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </div>
-    </div>
+      
+      <ImageModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        image={selectedImage}
+        alt="Product image"
+      />
+    </>
   );
 } 

@@ -156,6 +156,40 @@
   scroll-behavior: smooth;
 }
 
+/* Enhanced mobile horizontal scroll */
+.mobile-horizontal-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 16px;
+}
+
+.mobile-horizontal-scroll > * {
+  scroll-snap-align: start;
+}
+
+/* Snappy scroll animation */
+.mobile-horizontal-scroll {
+  scroll-behavior: smooth;
+  transition: scroll-behavior 0.3s ease-in-out;
+}
+
+/* Mobile scroll indicator */
+.mobile-scroll-indicator {
+  position: relative;
+}
+
+.mobile-scroll-indicator::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+  pointer-events: none;
+}
+
 /* Search animation utilities */
 .search-transition {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

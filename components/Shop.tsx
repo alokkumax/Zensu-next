@@ -7,11 +7,12 @@ import { useSearchParams } from "next/navigation";
 // import BrandList from "./shop/BrandList";
 import PriceList from "./shop/PriceList";
 import { client } from "@/sanity/lib/client";
-import { Loader2 } from "lucide-react";
+import { Loader2, Filter, X } from "lucide-react";
 import NoProductAvailable from "./NoProductAvailable";
 import ProductCard from "./ProductCard";
 import { useCurrency } from "@/contexts/CurrencyContext";
 import { getProductPriceByCurrency } from "@/lib/currencyUtils";
+import MobileFilterModal from "./MobileFilterModal";
 
 interface Props {
   categories: Category[];
@@ -31,6 +32,7 @@ const Shop = ({ categories }: Props) => {
     brandParams || null
   );
   const [selectedPrice, setSelectedPrice] = useState<string | null>(null);
+  const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchProducts = useCallback(async (signal?: AbortSignal) => {
@@ -138,7 +140,7 @@ const Shop = ({ categories }: Props) => {
   return (
     <div className="border-t md:px-20 p-2">
       <Container className="mt-5">
-        <div className="sticky top-0 z-10 mb-3">
+        <div className="sticky top-0 z-10 mb-3 hidden md:block">
           <div className="flex items-center justify-between">
             <h3 className="text-lg uppercase text-black/90 tracking-wide">
               FILTERS
@@ -159,8 +161,20 @@ const Shop = ({ categories }: Props) => {
             )}
           </div>
         </div>
-        <div className="flex flex-col md:flex-row gap-5 border-t border-t-shop_dark_green/50">
-          <div className="md:sticky md:top-20 md:self-start md:h-[calc(100vh-160px)] md:overflow-y-auto md:min-w-64 pb-5 md:border-r border-r-shop_btn_dark_green/50 scrollbar-hide">
+        {/* Mobile Filter Button */}
+        <div className="md:hidden flex justify-end p-4 border-t border-gray-200">
+          <button
+            onClick={() => setIsMobileFilterOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+          >
+            <Filter className="w-4 h-4" />
+            Sort / Filters
+          </button>
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-5 md:border-t border-t-shop_dark_green/50">
+          {/* Desktop Filters */}
+          <div className="hidden md:block md:sticky md:top-20 md:self-start md:h-[calc(100vh-160px)] md:overflow-y-auto md:min-w-64 pb-5 md:border-r border-r-shop_btn_dark_green/50 scrollbar-hide">
             <CategoryList
               categories={categories}
               selectedCategory={selectedCategory}
@@ -176,6 +190,8 @@ const Shop = ({ categories }: Props) => {
               selectedPrice={selectedPrice}
             />
           </div>
+          
+          {/* Products Grid */}
           <div className="flex-1 pt-5">
             <div className="h-[calc(100vh-160px)] overflow-y-auto pr-2 scrollbar-hide">
               {loading ? (
@@ -186,7 +202,7 @@ const Shop = ({ categories }: Props) => {
                   </p>
                 </div>
               ) : products?.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                   {products?.map((product) => (
                     <ProductCard key={product?._id} product={product} />
                   ))}
@@ -197,6 +213,23 @@ const Shop = ({ categories }: Props) => {
             </div>
           </div>
         </div>
+
+        {/* Mobile Filter Modal */}
+        <MobileFilterModal
+          isOpen={isMobileFilterOpen}
+          onClose={() => setIsMobileFilterOpen(false)}
+          categories={categories}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          selectedPrice={selectedPrice}
+          setSelectedPrice={setSelectedPrice}
+          onResetFilters={() => {
+            setSelectedCategory(null);
+            setSelectedBrand(null);
+            setSelectedPrice(null);
+          }}
+          productCount={products.length}
+        />
       </Container>
     </div>
   );

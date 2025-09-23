@@ -7,7 +7,6 @@ interface Props {
 }
 
 const HomeTabBar = ({ selectedTab, onTabSelect }: Props) => {
-console.log(selectedTab);
 
   return (
     <div className="flex items-center flex-wrap gap-3 md:gap-5 justify-between">
